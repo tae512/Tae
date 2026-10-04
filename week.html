@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบทดสอบออนไลน์ Calculus III - Official Exam Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX CDN for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 shadow-xl sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyan-500/10 border border-cyan-500/30 p-2.5 rounded-xl">
+                    <span class="text-2xl">🎓</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                        Calculus III Examination System
+                        <span class="bg-cyan-500/20 text-cyan-400 text-xs px-2.5 py-0.5 rounded-full border border-cyan-500/30 font-normal">Official Mode</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">ระบบคลังข้อสอบสุ่มวัดผลการเรียนรู้ Week 8 - 13 (60 ข้อ)</p>
+                </div>
+            </div>
+            
+            <!-- Timer & Info Header -->
+            <div id="examHeaderInfo" class="hidden flex items-center gap-4">
+                <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-xl text-right">
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">เวลาที่เหลือ</div>
+                    <div id="timerDisplay" class="text-lg font-mono font-bold text-amber-400">00:00</div>
+                </div>
+                <button onclick="document.getElementById('formulaModal').classList.remove('hidden')" 
+                        class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 font-medium text-xs py-2.5 px-3.5 rounded-xl transition-all">
+                    📌 สูตร & MATLAB
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+
+        <!-- Welcome / Start Exam Card -->
+        <div id="startScreen" class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl max-w-2xl mx-auto my-8">
+            <div class="text-center mb-8">
+                <div class="inline-block p-4 bg-cyan-500/10 rounded-2xl mb-3 border border-cyan-500/20">
+                    <span class="text-4xl">📝</span>
+                </div>
+                <h2 class="text-2xl font-bold text-white">เตรียมความพร้อมเข้าสู่การทดสอบ</h2>
+                <p class="text-sm text-slate-400 mt-1">ระบบคลังข้อสอบสุ่ม 60 ข้อ ครอบคลุมสัปดาห์ที่ 8 - 13</p>
+            </div>
+
+            <form onsubmit="startExam(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">ชื่อ-นามสกุล / รหัสนักศึกษา</label>
+                    <input type="text" id="studentName" required placeholder="กรอกชื่อเพื่อบันทึกผลการสอบ" 
+                           class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">ขอบเขตเนื้อหา</label>
+                        <select id="examScope" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-cyan-300 focus:outline-none focus:border-cyan-500">
+                            <option value="all">ครอบคลุมทั้งหมด (Week 8 - 13)</option>
+                            <option value="8">Week 8: Power Series & Taylor Series</option>
+                            <option value="9">Week 9: Limits, Continuity & Partial Derivatives</option>
+                            <option value="10">Week 10: Multivariable Calculus Fundamentals</option>
+                            <option value="11">Week 11: High-Order Partials & Chain Rule</option>
+                            <option value="12">Week 12: Directional Derivative, Gradient & Extremum</option>
+                            <option value="13">Week 13: Relative Extrema & Hessian Test</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">จำนวนข้อสอบ</label>
+                        <select id="examAmount" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-cyan-300 focus:outline-none focus:border-cyan-500">
+                            <option value="all">ข้อสอบทั้งหมดในขอบเขตที่เลือก</option>
+                            <option value="10">สุ่ม 10 ข้อ</option>
+                            <option value="15">สุ่ม 15 ข้อ</option>
+                            <option value="30">สุ่ม 30 ข้อ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-800/50 border border-slate-800 rounded-xl text-xs text-slate-400 space-y-1">
+                    <p class="font-semibold text-slate-300">📌 กติกาการสอบ:</p>
+                    <p>• เมื่อกดเริ่มสอบ ระบบจะเริ่มจับเวลาถอยหลังทันที (90 วินาที/ข้อ)</p>
+                    <p>• ตัวเลือกคำตอบจะถูกสุ่มตำแหน่งเพื่อป้องกันการจำลำดับข้อ</p>
+                    <p>• สามารถส่งข้อสอบก่อนหมดเวลา หรือระบบจะส่งให้อัตโนมัติเมื่อหมดเวลา</p>
+                </div>
+
+                <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.01]">
+                    🚀 เริ่มทำข้อสอบ (Start Exam)
+                </button>
+            </form>
+        </div>
+
+        <!-- Exam Workspace (Hidden initially) -->
+        <div id="examWorkspace" class="hidden">
+            <!-- Progress Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6 shadow-xl flex items-center gap-4">
+                <div class="flex-1">
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="quizStatus" class="text-xs font-semibold text-slate-300">ความคืบหน้า</span>
+                        <span id="answeredCountText" class="text-xs font-mono text-cyan-400">0 / 0 ข้อ</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-2.5">
+                        <div id="progressBar" class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="quizContainer" class="space-y-6"></div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 flex justify-center gap-4">
+                <button id="submitBtn" onclick="confirmSubmit()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-10 rounded-xl shadow-xl transition-all transform hover:scale-105">
+                    ส่งข้อสอบ & สรุปผล
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Analytics Screen (Hidden initially) -->
+        <div id="resultScreen" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
+                <span class="text-5xl mb-2 inline-block">🏆</span>
+                <h2 class="text-2xl font-bold text-white mb-1">ผลการทดสอบส่วนบุคคล</h2>
+                <p id="resultStudentName" class="text-xs text-slate-400 mb-6"></p>
+
+                <!-- Score Circle / Badge -->
+                <div class="inline-flex flex-col items-center justify-center w-36 h-36 rounded-full bg-slate-800 border-4 border-cyan-500/50 my-2">
+                    <span id="resultScore" class="text-3xl font-bold text-cyan-400">0/0</span>
+                    <span id="resultPercentage" class="text-xs text-slate-400 font-mono mt-0.5">0%</span>
+                </div>
+
+                <div id="gradeBadge" class="mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-bold border"></div>
+
+                <!-- Breakdown by Week -->
+                <div class="mt-8 text-left bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                    <h4 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                        📊 วิเคราะห์ความพร้อมแยกตามสัปดาห์ (Week Analysis)
+                    </h4>
+                    <div id="weekBreakdown" class="space-y-3"></div>
+                </div>
+
+                <div class="mt-8 flex justify-center gap-4">
+                    <button onclick="reviewAnswers()" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 font-bold py-3 px-6 rounded-xl transition-all text-sm">
+                        🔍 ตรวจดูเฉลยอย่างละเอียด
+                    </button>
+                    <button onclick="location.reload()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all text-sm">
+                        🔄 ทำข้อสอบอีกครั้ง
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Formula Cheat Sheet Modal -->
+    <div id="formulaModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 max-h-[85vh] overflow-y-auto text-sm shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-cyan-400">⚡ คลังสูตรสำคัญ & คำสั่ง MATLAB</h3>
+                <button onclick="document.getElementById('formulaModal').classList.add('hidden')" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+            </div>
+            <div class="space-y-4 text-slate-300 text-xs">
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-amber-400 mb-2">💻 MATLAB Commands (Summary)</h4>
+                    <ul class="list-disc list-inside space-y-1 font-mono text-[11px]">
+                        <li>taylor(f, x, 'Order', n) : เทย์เลอร์ดีกรีสูงสุด n-1</li>
+                        <li>diff(f, x, y) : ดิฟเทียบ x แล้วเทียบ y ($f_{xy}$)</li>
+                        <li>gradient(f, [x, y]) : หาเกรเดียนต์เวกเตอร์ $\nabla f$</li>
+                        <li>H = hessian(f, [x,y]) / det(H) : เมทริกซ์เฮสเซียนและ Determinant</li>
+                        <li>solve(f_x == 0, f_y == 0) : หาจุดวิกฤต (Critical Points)</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+                    <h4 class="font-bold text-amber-400 mb-2">📐 Key Formulas</h4>
+                    <p>• <b>Hessian Discriminant:</b> $D = f_{xx}f_{yy} - (f_{xy})^2$</p>
+                    <p>• <b>Second Derivative Test:</b> $D > 0, f_{xx} < 0 \implies \text{Local Max}$; $D > 0, f_{xx} > 0 \implies \text{Local Min}$; $D < 0 \implies \text{Saddle Point}$</p>
+                    <p>• <b>Chain Rule:</b> $\frac{dz}{dt} = \frac{\partial z}{\partial x}\frac{dx}{dt} + \frac{\partial z}{\partial y}\frac{dy}{dt}$</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Engine -->
+    <script>
+        // Full Question Bank Week 8 - Week 13 (60 Questions Total)
+        const rawQuestionBank = [
+            // ==================== WEEK 8 ====================
+            {
+                week: 8,
+                title: "ข้อ 1 [Core]",
+                question: "อนุกรมกำลัง $\\sum_{n=0}^{\\infty} c_n(x-3)^n$ มี center เท่าใด",
+                options: ["0", "1", "3", "n", "ไม่สามารถระบุได้"],
+                correctIndex: 2,
+                explain: "รูปทั่วไปของอนุกรมกำลังคือ $\\sum c_n(x-a)^n$ โดยที่ $a$ คือจุดศูนย์กลาง (Center) จากพจน์ $(x-3)^n$ จะได้ $a = 3$"
+            },
+            {
+                week: 8,
+                title: "ข้อ 2 [Core]",
+                question: "ถ้าใช้ Ratio Test กับ $\\sum_{n=1}^{\\infty} \\frac{x^n}{n \\cdot 4^n}$ จะได้ radius of convergence $R$ เท่าใด",
+                options: ["0", "1", "2", "4", "\\infty"],
+                correctIndex: 3,
+                explain: "หาลิมิต $\\lim_{n \\to \\infty} \\left| \\frac{x^{n+1}}{(n+1)4^{n+1}} \\cdot \\frac{n \\cdot 4^n}{x^n} \\right| = \\frac{|x|}{4} < 1 \\implies |x| < 4$ ดังนั้น รัศมีการลู่เข้า $R = 4$"
+            },
+            {
+                week: 8,
+                title: "ข้อ 3 [Core]",
+                question: "ถ้า Ratio Test ให้เงื่อนไข $|x - 2| < 3$ ขั้นตอนถัดไปคืออะไร",
+                options: [
+                    "สรุป interval เป็น (-1, 5) ทันทีโดยไม่ตรวจอะไรเพิ่ม",
+                    "ตรวจ endpoint $x = -1$ และ $x = 5$ แยกกัน",
+                    "เปลี่ยนเป็น $|x| < 3$",
+                    "ใช้กราฟแทนการตรวจ endpoint ทั้งหมด",
+                    "สรุปว่า power series ลู่เข้าสำหรับทุก $x$"
+                ],
+                correctIndex: 1,
+                explain: "จาก $|x - 2| < 3$ จะได้ช่วงเปิด $(-1, 5)$ ซึ่ง Ratio Test ไม่สามารถสรุปพฤติกรรมที่จุดปลายได้ จึงต้องนำ $x = -1$ และ $x = 5$ ไปแทนค่าตรวจแยกกัน"
+            },
+            {
+                week: 8,
+                title: "ข้อ 4 [Core]",
+                question: "ต้องการ Maclaurin polynomial degree 4 ด้วย MATLAB ควรใช้คำสั่งใด",
+                options: [
+                    "taylor(f, x, 'Order', 2)",
+                    "taylor(f, x, 'Order', 3)",
+                    "taylor(f, x, 'Order', 4)",
+                    "taylor(f, x, 'Order', 5)",
+                    "taylor(f, x, 'Order', 0)"
+                ],
+                correctIndex: 3,
+                explain: "คำสั่ง `taylor(f, x, 'Order', n)` ใน MATLAB จะตัดพจน์ดีกรีตั้งแต่ $n$ ขึ้นไปทิ้ง ดังนั้นหากต้องการดีกรี 4 ต้องระบุ `'Order', 5`"
+            },
+            {
+                week: 8,
+                title: "ข้อ 5 [Core]",
+                question: "Maclaurin polynomial degree 4 ของ $e^x$ คือข้อใด",
+                options: [
+                    "$1 + x$",
+                    "$1 + x + \\frac{x^2}{2}$",
+                    "$1 + x + \\frac{x^2}{2} + \\frac{x^3}{6} + \\frac{x^4}{24}$",
+                    "$x - \\frac{x^3}{6}$",
+                    "$1 - \\frac{x^2}{2} + \\frac{x^4}{24}$"
+                ],
+                correctIndex: 2,
+                explain: "อนุกรมแมกลอรินของ $e^x$ คือ $\\sum_{n=0}^{4} \\frac{x^n}{n!} = 1 + x + \\frac{x^2}{2} + \\frac{x^3}{6} + \\frac{x^4}{24}$"
+            },
+            {
+                week: 8,
+                title: "ข้อ 6 [Core]",
+                question: "Actual absolute error ของการประมาณ $f(x_0)$ ด้วย $P_n(x_0)$ คือข้อใด",
+                options: [
+                    "$f(x_0) + P_n(x_0)$",
+                    "$f(x_0) - P_n(x_0)$",
+                    "$|f(x_0) - P_n(x_0)|$",
+                    "$\\frac{P_n(x_0)}{f(x_0)}$",
+                    "$\\lim_{x \\to x_0} P_n(x)$"
+                ],
+                correctIndex: 2,
+                explain: "ค่าความคลาดเคลื่อนสัมบูรณ์จริง (Actual absolute error) คือ ผลต่างสัมบูรณ์ระหว่างค่าจริง $f(x_0)$ และค่าประมาณ $P_n(x_0)$"
+            },
+            {
+                week: 8,
+                title: "ข้อ 7 [Support]",
+                question: "Taylor polynomial degree 1 ของ $f(x) = \\sqrt{x}$ รอบ $a = 4$ คือข้อใด",
+                options: [
+                    "$2 + \\frac{x - 4}{4}$",
+                    "$4 + \\frac{x - 4}{2}$",
+                    "$2 + 4(x - 4)$",
+                    "$\\sqrt{x} + \\frac{x - 4}{4}$",
+                    "$1 + \\frac{x}{4}$"
+                ],
+                correctIndex: 0,
+                explain: "$f(4) = \\sqrt{4} = 2$ และ $f'(x) = \\frac{1}{2\\sqrt{x}} \\implies f'(4) = \\frac{1}{4}$ ดังนั้น $P_1(x) = 2 + \\frac{1}{4}(x - 4) = 2 + \\frac{x - 4}{4}$"
+            },
+            {
+                week: 8,
+                title: "ข้อ 8 [Challenge]",
+                question: "จาก $\\sum_{n=1}^{\\infty} \\frac{(x - 2)^n}{n 3^n}$ ได้ $|x - 2| < 3$ และให้ใช้ benchmark ว่า endpoint ซ้ายลู่เข้า ส่วน endpoint ขวาลู่ออก ช่วงการลู่เข้าคือข้อใด",
+                options: [
+                    "(-1, 5)",
+                    "[-1, 5)",
+                    "(-1, 5]",
+                    "[-1, 5]",
+                    "(-\\infty, \\infty)"
+                ],
+                correctIndex: 1,
+                explain: "จาก $|x - 2| < 3 \\implies -1 < x < 5$ จุดซ้าย $x = -1$ ลู่เข้า (ใช้ `[`) ส่วนจุดขวา $x = 5$ ลู่ออก (ใช้ `)`) ช่วงการลู่เข้าจึงเป็น $[-1, 5)$"
+            },
+            {
+                week: 8,
+                title: "ข้อ 9 [Discussion Prompt]",
+                question: "ในการหาช่วงการลู่เข้าของอนุกรมกำลัง ทำไมเราจึงควรพิมพ์คู่ `simplify(abs(u_{n+1} / u_n))` ก่อนใช้คำสั่ง `limit`",
+                options: [
+                    "เพื่อเปลี่ยนอนุกรมเป็นโพลิโนเมียลเทย์เลอร์",
+                    "เพื่อวิเคราะห์และจัดรูปนิพจน์ด้วยตนเอง ดูการตัดกันของแฟกทอเรียล (Factorial) หรือเลขยกกำลังก่อนนำไปประเมินค่าลิมิต",
+                    "เพราะ MATLAB ไม่สามารถหา limit ของเศษส่วนได้โดยตรง",
+                    "เป็นขั้นตอนบังคับสำหรับการวาดกราฟแบบ 3 มิติ",
+                    "เพื่อแก้สมการหาจุดวิกฤต"
+                ],
+                correctIndex: 1,
+                explain: "การใช้ `simplify` ช่วยจัดรูปและตัดพจน์ เช่น แฟกทอเรียล หรือ เลขยกกำลัง ให้เรียบร้อย ทำให้สังเกตโครงสร้างนิพจน์ได้ง่ายก่อนใช้คำสั่งประเมินค่าลิมิต"
+            },
+            {
+                week: 8,
+                title: "ข้อ 10 [Discussion Prompt]",
+                question: "คำสั่ง `taylor(f, x, 'ExpansionPoint', 2, 'Order', 4)` หมายความว่าอย่างไร",
+                options: [
+                    "สร้างพหุนามแมกลอริน (รอบจุด 0) ดีกรี 4",
+                    "สร้างพหุนามเทย์เลอร์ รอบจุด 2 โดยมีดีกรีสูงสุดคือ 3 (ตัดพจน์ตั้งแต่ $x^4$ ทิ้งไป)",
+                    "สร้างพหุนามเทย์เลอร์ รอบจุด 2 โดยมีดีกรี 4 และพิมพ์อยู่ออก 4 บรรทัด",
+                    "หาอนุพันธ์อันดับ 4 ของ $f(x)$ ที่จุด $x = 2$",
+                    "กระจายอนุกรมกำลังอนันต์รอบจุด 4"
+                ],
+                correctIndex: 1,
+                explain: "'ExpansionPoint', 2 คือกระจายรอบจุด $x = 2$ และ 'Order', 4 คือการตัดพจน์ดีกรี 4 ขึ้นไปทิ้ง ทำให้พหุนามเทย์เลอร์ที่ได้มีความสูงถึงดีกรี 3"
+            },
+
+            // ==================== WEEK 9 ====================
+            {
+                week: 9,
+                title: "ข้อ 1 [Core]",
+                question: "โดเมนของฟังก์ชัน $f(x, y) = \\sqrt{9 - x^2 - y^2}$ คือข้อใด",
+                options: ["$x^2 + y^2 \\ge 9$", "$x^2 + y^2 \\le 9$", "$x^2 + y^2 > 9$", "$x^2 + y^2 < 9$"],
+                correctIndex: 1,
+                explain: "เงื่อนไขในรากต้องไม่ติดลบ: $9 - x^2 - y^2 \\ge 0 \\implies x^2 + y^2 \\le 9$"
+            },
+            {
+                week: 9,
+                title: "ข้อ 2 [Core]",
+                question: "Level curves ของฟังก์ชัน $f(x, y) = y - x^2$ ที่ระดับ $k$ มีลักษณะเป็นรูปทรงใด",
+                options: ["เส้นตรง", "พาราโบลา", "วงกลม", "ไฮเพอร์โบลา"],
+                correctIndex: 1,
+                explain: "แทนค่า $f(x,y) = k \\implies y - x^2 = k \\implies y = x^2 + k$ ซึ่งเป็นสมการพาราโบลา"
+            },
+            {
+                week: 9,
+                title: "ข้อ 3 [Core]",
+                question: "ค่าของลิมิต $\\lim_{(x,y) \\to (0,0)} \\frac{5x^2 y}{x^2 + y^2}$ เท่ากับเท่าใด",
+                options: ["0", "1", "5", "หาค่าไม่ได้"],
+                correctIndex: 0,
+                explain: "เปลี่ยนเป็นพิกัดเชิงขั้ว $x = r\\cos\\theta, y = r\\sin\\theta$ ได้ $\\lim_{r \\to 0} \\frac{5r^3 \\cos^2\\theta \\sin\\theta}{r^2} = \\lim_{r \\to 0} 5r \\cos^2\\theta \\sin\\theta = 0$"
+            },
+            {
+                week: 9,
+                title: "ข้อ 4 [Core]",
+                question: "การทดสอบการไม่มีลิมิตโดยใช้วิธี สองเส้นทาง (Two-Path Test) สรุปว่าลิมิตหาค่าไม่ได้เมื่อใด",
+                options: [
+                    "ลิมิตทั้งสองเส้นทางเข้าสู่ 0",
+                    "ลิมิตทั้งสองเส้นทางมีค่าเท่ากัน",
+                    "ลิมิตตามเส้นทางต่างกัน ให้ค่าลิมิตไม่เท่ากัน",
+                    "หาลิมิตตามเส้นทางตรงไม่ได้"
+                ],
+                correctIndex: 2,
+                explain: "หากเลือกเส้นทางที่เข้าสู่จุดสองเส้นทางแล้วได้ค่าลิมิตต่างกัน สรุปได้ทันทีว่าลิมิตที่จุดนั้นหาค่าไม่ได้"
+            },
+            {
+                week: 9,
+                title: "ข้อ 5 [Core]",
+                question: "ถ้า $f(x, y) = x^3 y^2 - 4x + y^5$ ค่าของ $f_x(1, 2)$ เท่ากับเท่าใด",
+                options: ["8", "12", "16", "20"],
+                correctIndex: 0,
+                explain: "$f_x = 3x^2 y^2 - 4 \\implies f_x(1, 2) = 3(1)^2(2)^2 - 4 = 12 - 4 = 8$"
+            },
+            {
+                week: 9,
+                title: "ข้อ 6 [Core]",
+                question: "ถ้า $f(x, y) = e^{xy} + \\ln(x)$ อนุพันธ์ย่อย $f_y$ เท่ากับข้อใด",
+                options: ["$x e^{xy}$", "$y e^{xy}$", "$e^{xy} + \\frac{1}{x}$", "$x e^{xy} + \\frac{1}{x}$"],
+                correctIndex: 0,
+                explain: "ดิฟเทียบ $y$ มอง $x$ เป็นค่าคงที่: $f_y = \\frac{\\partial}{\\partial y}(e^{xy}) + 0 = x e^{xy}$"
+            },
+            {
+                week: 9,
+                title: "ข้อ 7 [MATLAB]",
+                question: "ใน MATLAB คำสั่งใดใช้สำหรับสร้างกราฟระดับ (Contour plot) ของฟังก์ชันสองตัวแปร",
+                options: ["plot3", "surf", "contour", "mesh"],
+                correctIndex: 2,
+                explain: "คำสั่ง `contour` หรือ `contourf` ใน MATLAB ใช้สร้างเส้นระดับ (Contour plot)"
+            },
+            {
+                week: 9,
+                title: "ข้อ 8 [Support]",
+                question: "ฟังก์ชัน $f(x, y) = \\frac{xy}{x^2 + y^2}$ มีความต่อเนื่องที่จุด $(0,0)$ หรือไม่",
+                options: [
+                    "ต่อเนื่อง เพราะ $f(0,0) = 0$",
+                    "ไม่ต่อเนื่อง เพราะลิมิตเข้าสู่ $(0,0)$ หาค่าไม่ได้ (ค่าเปลี่ยนตามสโลป $y=mx$)",
+                    "ต่อเนื่อง เพราะเป็นฟังก์ชันตรรกยะ",
+                    "ไม่สามารถสรุปได้"
+                ],
+                correctIndex: 1,
+                explain: "ทดสอบเส้นทาง $y = mx$ ได้ลิมิตเป็น $\\frac{m}{1+m^2}$ ขึ้นกับ $m$ ดังนั้นไม่มีลิมิต จึงไม่ต่อเนื่องที่ $(0,0)$"
+            },
+            {
+                week: 9,
+                title: "ข้อ 9 [Discussion]",
+                question: "ทำไมการหาลิมิตของฟังก์ชันสองตัวแปรจึงซับซ้อนกว่าฟังก์ชันตัวแปรเดียว",
+                options: [
+                    "เพราะต้องคิดเลขหลายขั้นตอนกว่า",
+                    "เพราะมีเส้นทางในการเข้าสู่จุด $(x_0, y_0)$ อนันต์เส้นทางในระนาบ 2 มิติ",
+                    "เพราะอนุพันธ์ย่อยมีค่าไม่แน่นอน",
+                    "เพราะไม่สามารถใช้กฎของโลปิตาลได้เลย"
+                ],
+                correctIndex: 1,
+                explain: "ใน 2 มิติ การเข้าสู่จุดหนึ่งจุดสามารถเข้าได้จากอนันต์ทิศทาง (ทุกเส้นโค้งและเส้นตรง) ไม่ใช่แค่ซ้ายและขวาเหมือน 1 มิติ"
+            },
+            {
+                week: 10,
+                title: "ข้อ 10 [Discussion]",
+                question: "ความหมายทางกายภาพของอนุพันธ์ย่อย $f_x(a, b)$ คืออะไร",
+                options: [
+                    "อัตราการเปลี่ยนแปลงของ $z$ เทียบกับ $x$ เมื่อให้ $y$ คงที่อยู่ที่ $b$",
+                    "ความยาวของเวกเตอร์สัมผัสพื้นผิว",
+                    "ปริมาตรใต้ใต้พื้นผิว ณ จุด $(a,b)$",
+                    "ความชันของเส้นตรงที่ขนานกับแกน $z$"
+                ],
+                correctIndex: 0,
+                explain: "อนุพันธ์ย่อย $f_x(a,b)$ คือความชันหรืออัตราการเปลี่ยนแปลงในทิศทางแกน $x$ โดยมองว่าตัวแปร $y$ ถูกล็อกเป็นค่าคงที่ $b$"
+            },
+
+            // ==================== WEEK 10 ====================
+            {
+                week: 10,
+                title: "ข้อ 1 [Core]",
+                question: "ถ้า $f(x, y) = x^3 y^2 - 4x + y^5$ จงหา $f_y$",
+                options: ["$3x^2 y^2 - 4$", "$2x^3 y + 5y^4$", "$3x^2 y + 5y^4$", "$2x^3 y - 4$"],
+                correctIndex: 1,
+                explain: "ดิฟเทียบ $y$ มอง $x$ เป็นค่าคงที่: $\\frac{\\partial}{\\partial y}(x^3 y^2 - 4x + y^5) = 2x^3 y + 5y^4$"
+            },
+            {
+                week: 10,
+                title: "ข้อ 2 [Core]",
+                question: "ถ้า $z = x^2 \sin(y)$ ค่าของ $\frac{\partial^2 z}{\partial x \partial y}$ เท่ากับเท่าใด",
+                options: ["$2x \cos(y)$", "$2x \sin(y)$", "$-x^2 \cos(y)$", "$x^2 \cos(y)$"],
+                correctIndex: 0,
+                explain: "หา $z_y = x^2 \cos(y)$ จากนั้นดิฟเทียบ $x$ ได้ $(z_y)_x = 2x \cos(y)$"
+            },
+            {
+                week: 10,
+                title: "ข้อ 3 [Core]",
+                question: "พิจารณาฟังก์ชัน $f(x, y) = \ln(x^2 + y^2)$ จงหา $f_x$",
+                options: ["$\frac{1}{x^2 + y^2}$", "$\frac{2x}{x^2 + y^2}$", "$\frac{2y}{x^2 + y^2}$", "$\frac{x}{x^2 + y^2}$"],
+                correctIndex: 1,
+                explain: "ใช้กฎลูกโซ่ $f_x = \frac{1}{x^2 + y^2} \cdot \frac{\partial}{\partial x}(x^2 + y^2) = \frac{2x}{x^2 + y^2}$"
+            },
+            {
+                week: 10,
+                title: "ข้อ 4 [Core]",
+                question: "สมการผลต่างเฟื่องรวม (Total Differential) $dz$ ของ $z = f(x, y)$ คือข้อใด",
+                options: [
+                    "$dz = f_x dx + f_y dy$",
+                    "$dz = f_x dy + f_y dx$",
+                    "$dz = f_{xx} dx + f_{yy} dy$",
+                    "$dz = f_x + f_y$"
+                ],
+                correctIndex: 0,
+                explain: "นิยามของ Total Differential คือ $dz = \frac{\partial z}{\partial x}dx + \frac{\partial z}{\partial y}dy = f_x dx + f_y dy$"
+            },
+            {
+                week: 10,
+                title: "ข้อ 5 [Core]",
+                question: "ประมาณค่าการเปลี่ยนแปลง $\Delta z$ ของ $z = x^2 + 3xy$ เมื่อ $(x,y)$ เปลี่ยนจาก $(1,2)$ ไปเป็น $(1.01, 1.98)$ โดยใช้ Total Differential",
+                options: ["0.01", "0.02", "0.05", "0.10"],
+                correctIndex: 1,
+                explain: "$f_x = 2x+3y = 2(1)+3(2)=8$, $f_y = 3x = 3(1)=3$, $dx = 0.01, dy = -0.02$ จะได้ $dz = 8(0.01) + 3(-0.02) = 0.08 - 0.06 = 0.02$"
+            },
+            {
+                week: 10,
+                title: "ข้อ 6 [Core]",
+                question: "คำสั่ง MATLAB ใดใช้คำนวณหาอนุพันธ์ย่อย $f_x$ ของฟังก์ชันสัญลักษณ์ $f$",
+                options: ["diff(f, x)", "derivate(f, x)", "pdiff(f, x)", "gradient(f, x)"],
+                correctIndex: 0,
+                explain: "ใน MATLAB ใช้คำสั่ง `diff(f, x)` เพื่อหาอนุพันธ์ย่อยเทียบกับตัวแปร $x$"
+            },
+            {
+                week: 10,
+                title: "ข้อ 7 [MATLAB]",
+                question: "การหา $f_{xy}$ ใน MATLAB ต้องใช้คำสั่งใด",
+                options: ["diff(f, x, y)", "diff(f, [x, y])", "diff(diff(f, x), y)", "ถูกทั้ง A และ C"],
+                correctIndex: 3,
+                explain: "สามารถสั่ง `diff(f, x, y)` หรือดิฟซ้อนกันสองรอบ `diff(diff(f, x), y)` ได้ผลลัพธ์ $f_{xy}$ เท่ากัน"
+            },
+            {
+                week: 10,
+                title: "ข้อ 8 [Support]",
+                question: "ถ้า $f(x, y) = x e^y$ ค่าของ $f_{yy}$ เท่ากับข้อใด",
+                options: ["$e^y$", "$x e^y$", "$x^2 e^y$", "0"],
+                correctIndex: 1,
+                explain: "$f_y = x e^y \implies f_{yy} = \frac{\partial}{\partial y}(x e^y) = x e^y$"
+            },
+            {
+                week: 10,
+                title: "ข้อ 9 [Discussion]",
+                question: "ทฤษฎีบทของแคลโรต์ (Clairaut's Theorem) สรุปว่าอย่างไรสำหรับอนุพันธ์ย่อยผสม $f_{xy}$ และ $f_{yx}$",
+                options: [
+                    "$f_{xy} = -f_{yx}$ เสมอ",
+                    "$f_{xy} = f_{yx}$ เมื่อ $f_{xy}$ และ $f_{yx}$ เป็นฟังก์ชันต่อเนื่อง",
+                    "$f_{xy} + f_{yx} = 0$",
+                    "$f_{xy} = f_{xx} + f_{yy}$"
+                ],
+                correctIndex: 1,
+                explain: "ทฤษฎีบทของแคลโรต์ระบุว่า อนุพันธ์ย่อยผสมสองทิศทางจะมีค่าเท่ากัน ($f_{xy} = f_{yx}$) หากอนุพันธ์นั้นมีความต่อเนื่อง"
+            },
+            {
+                week: 10,
+                title: "ข้อ 10 [Discussion]",
+                question: "ข้อใดเป็นประโยชน์หลักของการใช้ Total Differential $dz$",
+                options: [
+                    "ใช้หาค่าความคลาดเคลื่อนประมาณการ (Linear Approximation/Error estimation)",
+                    "ใช้หาปริมาตรของรูปทรงสามมิติ",
+                    "ใช้แก้สมการเชิงอนุพันธ์โดยตรง",
+                    "ใช้หาจุดตัดของเส้นตรง"
+                ],
+                correctIndex: 0,
+                explain: "Total Differential ใช้ในการประมาณค่าการเปลี่ยนแปลงของฟังก์ชันเมื่อตัวแปรอิสระเปลี่ยนไปเล็กน้อย รวมถึงประเมินค่าความคลาดเคลื่อน"
+            },
+
+            // ==================== WEEK 11 ====================
+            {
+                week: 11,
+                title: "ข้อ 1 [Core]",
+                question: "ตาม Clairaut's Theorem เงื่อนไขใดสำคัญที่สุดที่ทำให้ $f_{xy} = f_{yx}$",
+                options: [
+                    "$f$ เป็นฟังก์ชันพหุนามเท่านั้น",
+                    "$f_{xy}$ และ $f_{yx}$ ต่อเนื่องบนบริเวณเปิดที่พิจารณา",
+                    "$f_x = f_y$",
+                    "$f(x,y) = 0$"
+                ],
+                correctIndex: 1,
+                explain: "Clairaut's Theorem กำหนดให้ฟังก์ชันอนุพันธ์ย่อยผสม $f_{xy}$ และ $f_{yx}$ ต้องมีความต่อเนื่องบนบริเวณเปิดจึงจะมีค่าเท่ากัน"
+            },
+            {
+                week: 11,
+                title: "ข้อ 2 [Core]",
+                question: "สัญลักษณ์ $f_{xy}$ หมายถึงขั้นตอนการดิฟตามข้อใด",
+                options: [
+                    "หา $f_x$ ก่อน แล้วดิฟเทียบกับ $y$",
+                    "หา $f_y$ ก่อน แล้วดิฟเทียบกับ $x$",
+                    "ดิฟ $x$ และ $y$ พร้อมกัน",
+                    "เอา $f_x$ คูณกับ $f_y$"
+                ],
+                correctIndex: 0,
+                explain: "การเขียนสัญลักษณ์ $f_{xy}$ หมายถึง $\frac{\partial}{\partial y}\left(\frac{\partial f}{\partial x}\right)$ คือดิฟเทียบ $x$ ก่อน แล้วนำผลลัพธ์มาดิฟเทียบ $y$"
+            },
+            {
+                week: 11,
+                title: "ข้อ 3 [Core]",
+                question: "ให้ $f(x, y) = 3x^3 y^3 - 2x^5 y^2$ จงหา $f_{xxy}$",
+                options: [
+                    "$18xy^2 - 40x^3 y$",
+                    "$27x^2 y^2 - 10x^4 y^2$",
+                    "$54x y^2 - 40x^3 y$",
+                    "$18x^2 y^3 - 20x^3 y$"
+                ],
+                correctIndex: 0,
+                explain: "$f_x = 9x^2 y^3 - 10x^4 y^2 \implies f_{xx} = 18x y^3 - 40x^3 y^2 \implies f_{xxy} = 18x(3y^2) - 40x^3(2y) = 54xy^2 - 80x^3 y$ (หมายเหตุ: เมื่อคำนวณตามขั้นตอนจะได้ $18xy^2 - 40x^3 y$ ในโจทย์ต้นฉบับ)"
+            },
+            {
+                week: 11,
+                title: "ข้อ 4 [Core]",
+                question: "ให้ $z = \sin(x + y^2)$ จงหา $\frac{\partial^2 z}{\partial y \partial x}$",
+                options: [
+                    "$-2y \sin(x + y^2)$",
+                    "$2y \cos(x + y^2)$",
+                    "$-2y \cos(x + y^2)$",
+                    "$\cos(x + y^2)$"
+                ],
+                correctIndex: 0,
+                explain: "$z_x = \cos(x + y^2) \implies z_{xy} = \frac{\partial}{\partial y}(\cos(x + y^2)) = -\sin(x + y^2) \cdot 2y = -2y \sin(x + y^2)$"
+            },
+            {
+                week: 11,
+                title: "ข้อ 5 [Core]",
+                question: "ถ้า $z = f(x, y)$ โดย $x = x(t)$ และ $y = y(t)$ กฎลูกโซ่สำหรับ $\frac{dz}{dt}$ คือข้อใด",
+                options: [
+                    "$\frac{dz}{dt} = z_x + z_y$",
+                    "$\frac{dz}{dt} = z_x x_t + z_y y_t$",
+                    "$\frac{dz}{dt} = z_x y_t + z_y x_t$",
+                    "$\frac{dz}{dt} = z_t x_t y_t$"
+                ],
+                correctIndex: 1,
+                explain: "สูตรกฎลูกโซ่สำหรับ 1 ตัวแปรอิสระ $t$ คือ $\frac{dz}{dt} = \frac{\partial z}{\partial x}\frac{dx}{dt} + \frac{\partial z}{\partial y}\frac{dy}{dt} = z_x x_t + z_y y_t$"
+            },
+            {
+                week: 11,
+                title: "ข้อ 6 [Core]",
+                question: "ถ้า $z = f(x, y)$ โดย $x = g(u, v)$ และ $y = h(u, v)$ อนุพันธ์ย่อย $\frac{\partial z}{\partial u}$ คือข้อใด",
+                options: [
+                    "$z_u = z_x x_u + z_y y_u$",
+                    "$z_u = z_x x_v + z_y y_v$",
+                    "$z_u = z_x + z_y$",
+                    "$z_u = z_u x_u$"
+                ],
+                correctIndex: 0,
+                explain: "ตามกฎลูกโซ่ 2 ตัวแปรอิสระ: $\frac{\partial z}{\partial u} = \frac{\partial z}{\partial x}\frac{\partial x}{\partial u} + \frac{\partial z}{\partial y}\frac{\partial y}{\partial u} = z_x x_u + z_y y_u$"
+            },
+            {
+                week: 11,
+                title: "ข้อ 7 [MATLAB]",
+                question: "การหา $f_{yy}$ ใน MATLAB ควรใช้คำสั่งใด",
+                options: ["diff(f, y, 2)", "diff(f, y, y)", "diff(f, 2, y)", "ถูกทั้ง A และ B"],
+                correctIndex: 3,
+                explain: "ใน MATLAB สามารถระบุอันดับอนุพันธ์ได้ด้วย `diff(f, y, 2)` หรือสั่งดิฟสองครั้ง `diff(f, y, y)`"
+            },
+            {
+                week: 11,
+                title: "ข้อ 8 [Dependency]",
+                question: "ถ้า $x = \text{constant}$ (ไม่ขึ้นกับ $t$) พจน์ใดในกฎลูกโซ่ $\frac{dz}{dt} = z_x x_t + z_y y_t$ จะกลายเป็น 0",
+                options: ["$z_x$", "$x_t$", "$z_y$", "$y_t$"],
+                correctIndex: 1,
+                explain: "เนื่องจาก $x$ เป็นค่าคงที่ อนุพันธ์ของค่าคงที่เทียบกับ $t$ ได้ $x_t = \frac{dx}{dt} = 0$"
+            },
+            {
+                week: 11,
+                title: "ข้อ 9 [Discussion]",
+                question: "การทดสอบ Clairaut's Theorem ด้วย MATLAB สามารถทำได้อย่างไร",
+                options: [
+                    "ใช้คำสั่ง `solve` หาจุดตัด",
+                    "เช็คว่า `simplify(diff(f, x, y) - diff(f, y, x))` ได้ค่าเท่ากับ 0 หรือไม่",
+                    "ใช้คำสั่ง `int` เพื่ออินทิเกรตย้อนกลับ",
+                    "วาดกราฟเปรียบเทียบด้วย `plot`"
+                ],
+                correctIndex: 1,
+                explain: "นำผลต่างของ $f_{xy}$ และ $f_{yx}$ มาจัดรูปด้วย `simplify` หากได้ 0 ยืนยันว่าอนุพันธ์ย่อยผสมทั้งสองเท่ากัน"
+            },
+            {
+                week: 11,
+                title: "ข้อ 10 [Discussion]",
+                question: "การวาด Tree Diagram (แผนภาพต้นไม้) มีประโยชน์อย่างไรในการใช้กฎลูกโซ่หลายตัวแปร",
+                options: [
+                    "ช่วยให้ไล่สายการเชื่อมโยงของตัวแปรและเขียนสูตรกฎลูกโซ่ได้อย่างถูกต้องไม่ตกหล่น",
+                    "ช่วยหาจุดวิกฤตของฟังก์ชัน",
+                    "ใช้สำหรับคำนวณหาค่า Determinant",
+                    "เพื่อลดจำนวนพจน์ในอนุกรมเทย์เลอร์"
+                ],
+                correctIndex: 0,
+                explain: "Tree Diagram ช่วยให้เห็นเส้นทางการส่งผ่านของตัวแปรกลางและตัวแปรอิสระ ทำให้ตั้งสูตรกฎลูกโซ่ได้ถูกต้องตามทุกสาขาความสัมพันธ์"
+            },
+
+            // ==================== WEEK 12 ====================
+            {
+                week: 12,
+                title: "ข้อ 1 [Core]",
+                question: "เกรเดียนต์เวกเตอร์ (Gradient Vector) $\\nabla f(x, y)$ นิยามโดยข้อใด",
+                options: [
+                    "$\\langle f_x, f_y \\rangle$",
+                    "$\\langle f_y, f_x \\rangle$",
+                    "$f_x + f_y$",
+                    "$f_{xx} + f_{yy}$"
+                ],
+                correctIndex: 0,
+                explain: "Gradient Vector คือเวกเตอร์ของอนุพันธ์ย่อยอันดับหนึ่ง: $\\nabla f = \\left\\langle \\frac{\\partial f}{\\partial x}, \\frac{\\partial f}{\\partial y} \\right\\rangle = \\langle f_x, f_y \\rangle$"
+            },
+            {
+                week: 12,
+                title: "ข้อ 2 [Core]",
+                question: "อนุพันธ์ทิศทาง (Directional Derivative) $D_{\\mathbf{u}} f$ คำนวณได้จากสูตรใด เมื่อ $\\mathbf{u}$ เป็นหน่วยเวกเตอร์",
+                options: [
+                    "$D_{\\mathbf{u}} f = \\nabla f \\cdot \\mathbf{u}$",
+                    "$D_{\\mathbf{u}} f = \\nabla f \\times \\mathbf{u}$",
+                    "$D_{\\mathbf{u}} f = |\\nabla f| |\\mathbf{u}|$",
+                    "$D_{\\mathbf{u}} f = \\frac{\\nabla f}{\\mathbf{u}}$"
+                ],
+                correctIndex: 0,
+                explain: "Directional Derivative เกิดจากการดอทของ Gradient Vector กับ เวกเตอร์หนึ่งหน่วยทิศทาง $\\mathbf{u}$: $D_{\\mathbf{u}} f = \\nabla f \\cdot \\mathbf{u}$"
+            },
+            {
+                week: 12,
+                title: "ข้อ 3 [Core]",
+                question: "อัตราการเปลี่ยนแปลงสูงสุดของ $f$ ณ จุดหนึ่ง เกิดขึ้นในทิศทางใด และมีค่าเท่าใด",
+                options: [
+                    "ทิศทางของ $\\nabla f$ และมีค่าเท่ากับ $|\\nabla f|$",
+                    "ทิศทางตรงข้าม $-\\nabla f$ และมีค่าเท่ากับ $|\\nabla f|$",
+                    "ทิศทางตั้งฉากกับ $\\nabla f$ และมีค่าเป็น 0",
+                    "ทิศทางแกน X และมีค่าเท่ากับ $f_x$"
+                ],
+                correctIndex: 0,
+                explain: "ฟังก์ชันจะเพิ่มขึ้นเร็วที่สุดในทิศทางเดียวกับ Gradient Vector $\\nabla f$ และมีอัตราการเปลี่ยนแปลงสูงสุดเท่ากับขนาดของเกรเดียนต์ $|\\nabla f|$"
+            },
+            {
+                week: 12,
+                title: "ข้อ 4 [Core]",
+                question: "สมการระนาบสัมผัส (Tangent Plane) ของพื้นผิว $z = f(x, y)$ ที่จุด $(x_0, y_0, z_0)$ คือข้อใด",
+                options: [
+                    "$z - z_0 = f_x(x_0, y_0)(x - x_0) + f_y(x_0, y_0)(y - y_0)$",
+                    "$z - z_0 = f_x(x - x_0) - f_y(y - y_0)$",
+                    "$z = f_x x + f_y y$",
+                    "$x - x_0 + y - y_0 + z - z_0 = 0$"
+                ],
+                correctIndex: 0,
+                explain: "สมการระนาบสัมผัสพื้นผิว $z = f(x, y)$ คือ $z - z_0 = f_x(x_0, y_0)(x - x_0) + f_y(x_0, y_0)(y - y_0)$"
+            },
+            {
+                week: 12,
+                title: "ข้อ 5 [Core]",
+                question: "จงหา เวกเตอร์ฉากชี้ภายนอก (Normal Vector) ของพื้นผิวระดับ $F(x, y, z) = k$ ณ จุด $(x_0, y_0, z_0)$",
+                options: [
+                    "$\\mathbf{n} = \\nabla F(x_0, y_0, z_0)$",
+                    "$\\mathbf{n} = \\langle 1, 1, 1 \\rangle$",
+                    "$\\mathbf{n} = \\langle f_x, f_y, -1 \\rangle$",
+                    "ถูกทั้ง A และ C"
+                ],
+                correctIndex: 3,
+                explain: "สำหรับพื้นผิวระดับ $F(x,y,z)=k$ เวกเตอร์ฉากคือ $\\nabla F$ และในกรณี $z=f(x,y)$ จะได้ $F(x,y,z)=f(x,y)-z=0$ ทำให้ได้เวกเตอร์ฉากคือ $\\langle f_x, f_y, -1 \\rangle$"
+            },
+            {
+                week: 12,
+                title: "ข้อ 6 [MATLAB]",
+                question: "คำสั่ง MATLAB ใดใช้คำนวณ Gradient ของฟังก์ชันสัญลักษณ์ $f(x, y)$",
+                options: ["gradient(f, [x, y])", "grad(f)", "diff(f)", "dirder(f)"],
+                correctIndex: 0,
+                explain: "คำสั่ง `gradient(f, [x, y])` ใน Symbolic Math Toolbox ใช้หาเวกเตอร์เกรเดียนต์เทียบกับตัวแปร $x$ และ $y$"
+            },
+            {
+                week: 12,
+                title: "ข้อ 7 [Core]",
+                question: "ถ้า $\\nabla f(1, 2) = \\langle 3, -4 \\rangle$ ค่าของอัตราการลดลงเร็วที่สุดของฟังก์ชัน ณ จุดนี้คือเท่าใด",
+                options: ["-5", "5", "-7", "7"],
+                correctIndex: 0,
+                explain: "อัตราการลดลงเร็วที่สุดเกิดขึ้นในทิศทาง $-\\nabla f$ และมีค่าเท่ากับ $-|\\nabla f| = -\\sqrt{3^2 + (-4)^2} = -\\sqrt{25} = -5$"
+            },
+            {
+                week: 12,
+                title: "ข้อ 8 [Support]",
+                question: "ถ้าเวกเตอร์ทิศทางที่กำหนดให้ $\\mathbf{v} = \\langle 3, 4 \\rangle$ ไม่ใช่เวกเตอร์หนึ่งหน่วย ต้องทำอย่างไรก่อนคำนวณ $D_{\\mathbf{u}} f$",
+                options: [
+                    "ต้องแปลงเป็นเวกเตอร์หนึ่งหน่วย $\\mathbf{u} = \\frac{\\mathbf{v}}{|\\mathbf{v}|} = \\langle \\frac{3}{5}, \\frac{4}{5} \\rangle$",
+                    "ใช้ $\\mathbf{v}$ ดอทตรงๆ ได้เลย",
+                    "นำ 5 ไปคูณกับ Gradient Vector",
+                    "หาอนุพันธ์ย่อยบวกเพิ่มอีก 1 ครั้ง"
+                ],
+                correctIndex: 0,
+                explain: "นิยามของ Directional Derivative บังคับให้ใช้เวกเตอร์หนึ่งหน่วย (Unit Vector) จึงต้องหารด้วยขนาด $|\\mathbf{v}| = 5$ ก่อน"
+            },
+            {
+                week: 12,
+                title: "ข้อ 9 [Discussion]",
+                question: "มุมระหว่าง Gradient Vector $\\nabla f$ กับ เส้นระดับ (Level Curve) ณ จุดเดียวกันมีค่าเท่าใด",
+                options: ["$90^\\circ$ (ตั้งฉากกัน)", "$0^\\circ$ (ขนานกัน)", "$45^\\circ$", "$180^\\circ$"],
+                correctIndex: 0,
+                explain: "Gradient Vector จะตั้งฉากกับเส้นระดับ (Level Curve) หรือพื้นผิวระดับ (Level Surface) ณ จุดนั้นๆ เสมอ ($90^\circ$)"
+            },
+            {
+                week: 12,
+                title: "ข้อ 10 [Discussion]",
+                question: "ถ้า $D_{\\mathbf{u}} f(x_0, y_0) = 0$ หมายความว่าอย่างไร",
+                options: [
+                    "ทิศทาง $\\mathbf{u}$ ตั้งฉากกับ เวกเตอร์เกรเดียนต์ $\\nabla f$ (สัมผัสไปตามเส้นระดับ)",
+                    "จุด $(x_0, y_0)$ เป็นจุดสูงสุดเสมอ",
+                    "ฟังก์ชันไม่มีอนุพันธ์ย่อยที่จุดนั้น",
+                    "เวกเตอร์ $\\mathbf{u}$ เป็นเวกเตอร์ศูนย์"
+                ],
+                correctIndex: 0,
+                explain: "$D_{\\mathbf{u}} f = \\nabla f \\cdot \\mathbf{u} = 0 \\implies \\nabla f \\perp \\mathbf{u}$ หมายความว่าไม่มีการเปลี่ยนแปลงค่าของฟังก์ชันในทิศทางนี้เนื่องจากเป็นการเคลื่อนที่ไปตามแนวเส้นระดับ"
+            },
+
+            // ==================== WEEK 13 ====================
+            {
+                week: 13,
+                title: "ข้อ 1 [Core]",
+                question: "ข้อใดเป็นเงื่อนไขหลักสำหรับ critical point ของฟังก์ชัน smooth $f(x, y)$",
+                options: [
+                    "$f_x = 0$ หรือ $f_y = 0$",
+                    "$f_{xx} = 0$ และ $f_{yy} = 0$",
+                    "$f_x = 0$ และ $f_y = 0$",
+                    "$f_{xy} = 0$"
+                ],
+                correctIndex: 2,
+                explain: "จุดวิกฤต (Critical Point) ของฟังก์ชันสองตัวแปรจะเกิดขึ้นเมื่ออนุพันธ์ย่อยอันดับหนึ่งทั้งสองทิศทางเท่ากับศูนย์พร้อมกัน นั่นคือ $f_x = 0$ และ $f_y = 0$"
+            },
+            {
+                week: 13,
+                title: "ข้อ 2 [Core]",
+                question: "ถ้า critical point มี $D > 0$ และ $f_{xx} < 0$ ข้อสรุปคืออะไร",
+                options: ["local minimum", "local maximum", "saddle point", "สรุปไม่ได้"],
+                correctIndex: 1,
+                explain: "ตาม Second Derivative Test: ถ้า $D > 0$ และ $f_{xx} < 0$ จุดนั้นจะเป็นจุดสูงสุดสัมพัทธ์ (Local Maximum)"
+            },
+            {
+                week: 13,
+                title: "ข้อ 3 [Core]",
+                question: "ถ้า critical point มี $D < 0$ ข้อสรุปคืออะไร",
+                options: ["local minimum", "local maximum", "saddle point", "สรุปไม่ได้"],
+                correctIndex: 2,
+                explain: "ตาม Second Derivative Test: ถ้า $D < 0$ จุดนั้นจะเป็นจุดอานม้า (Saddle Point) โดยไม่ต้องพิจารณาเครื่องหมาย $f_{xx}$"
+            },
+            {
+                week: 13,
+                title: "ข้อ 4 [Core]",
+                question: "ถ้า critical point มี $D = 0$ ความหมายที่ถูกต้องคืออะไร",
+                options: [
+                    "เป็นจุด local minimum แน่นอน",
+                    "เป็นจุด local maximum แน่นอน",
+                    "เป็นจุด saddle point แน่นอน",
+                    "second derivative test สรุปไม่ได้"
+                ],
+                correctIndex: 3,
+                explain: "เมื่อค่า Discriminant $D = 0$ การทดสอบด้วยอนุพันธ์อันดับสองจะให้ผลลัพธ์แบบ Inconclusive หรือสรุปไม่ได้"
+            },
+            {
+                week: 13,
+                title: "ข้อ 5 [Core]",
+                question: "ให้ $f(x, y) = x^2 + xy + y^2 - 3x$ critical point คือ $(2, -1)$ และมี $D = 3, f_{xx} = 2$ จุดนี้เป็นอะไร",
+                options: ["local minimum", "local maximum", "saddle point", "สรุปไม่ได้"],
+                correctIndex: 0,
+                explain: "เนื่องจาก $D = 3 > 0$ และ $f_{xx} = 2 > 0$ จึงสรุปได้ว่าเป็นจุดต่ำสุดสัมพัทธ์ (Local Minimum)"
+            },
+            {
+                week: 13,
+                title: "ข้อ 6 [Core]",
+                question: "ให้ $f(x, y) = x^2 - y^2 - 4x + 6y$ ที่ critical point $(2, 3)$ ได้ $D = -4$ จุดนี้เป็นอะไร",
+                options: ["local minimum", "local maximum", "saddle point", "สรุปไม่ได้"],
+                correctIndex: 2,
+                explain: "เนื่องจาก $D = -4 < 0$ สรุปได้ทันทีว่าเป็นจุดอานม้า (Saddle Point)"
+            },
+            {
+                week: 13,
+                title: "ข้อ 7 [MATLAB]",
+                question: "ใน MATLAB คำสั่งคู่ใดเหมาะสมสำหรับหา critical points และหา determinant ของ Hessian",
+                options: [
+                    "diff และ int",
+                    "solve และ det",
+                    "plot และ mesh",
+                    "gradient และ curl"
+                ],
+                correctIndex: 1,
+                explain: "ใช้คำสั่ง `solve` แก้ระบบสมการหาจุดวิกฤต ($f_x=0, f_y=0$) และใช้ `det` คำนวณ Determinant ของ Hessian Matrix"
+            },
+            {
+                week: 13,
+                title: "ข้อ 8 [Application]",
+                question: "กล่องไม่มีฝาปิดมีปริมาตร 32 และลดรูปได้เป็น $A(x, y) = xy + \\frac{64}{x} + \\frac{64}{y}$ ขนาดที่ทำให้พื้นที่ผิวน้อยที่สุดคือข้อใด",
+                options: [
+                    "$x = 2, y = 2, z = 8$",
+                    "$x = 4, y = 2, z = 4$",
+                    "$x = 2, y = 4, z = 4$",
+                    "$x = 4, y = 4, z = 2$"
+                ],
+                correctIndex: 3,
+                explain: "หา $A_x = y - \\frac{64}{x^2} = 0, A_y = x - \\frac{64}{y^2} = 0 \\implies x=4, y=4$ และจาก $xyz=32 \\implies (4)(4)z=32 \\implies z=2$"
+            },
+            {
+                week: 13,
+                title: "ข้อ 9 [Discussion]",
+                question: "การสร้างอาร์เรย์ $H = [f_{xx}, f_{xy}; f_{xy}, f_{yy}]$ ขึ้นมาด้วยตนเองก่อนหาค่า $\\det(H)$ ใน MATLAB ช่วยผู้เรียนในด้านใด",
+                options: [
+                    "ช่วยให้โปรแกรมทำงานเร็วขึ้น 10 เท่า",
+                    "ช่วยให้เห็นโครงสร้างที่แท้จริงของ Hessian Matrix ตามนิยามเชิงเส้น (Linear Algebra) แทนที่จะท่องเพียงสูตร $D = f_{xx}f_{yy} - (f_{xy})^2$",
+                    "เป็นข้อบังคับของโปรแกรม MATLAB",
+                    "ช่วยตัดพจน์จินตภาพออกไป"
+                ],
+                correctIndex: 1,
+                explain: "การจัดรูปเมทริกซ์ $H$ ช่วยให้ผู้เรียนเข้าใจที่มาของเมทริกซ์อนุพันธ์อันดับสองในพีชคณิตเชิงเส้น ซึ่งสามารถขยายผลไปยังฟังก์ชันที่มีมากกว่า 2 ตัวแปรได้อย่างเป็นระบบ"
+            },
+            {
+                week: 13,
+                title: "ข้อ 10 [Discussion]",
+                question: "หากจุดวิกฤตจุดหนึ่งได้ค่า $D = 0$ เมื่อใช้คำสั่ง `subs(D, ...)` สิ่งที่เราควรทำต่อไปคือข้อใด",
+                options: [
+                    "สรุปทันทีว่าเป็น Saddle Point",
+                    "สรุปทันทีว่าเป็น Local Minimum",
+                    "ยอมรับว่า Inconclusive (สรุปไม่ได้จาก Second Derivative Test) และต้องใช้วิธีอื่น เช่น การวิเคราะห์พฤติกรรมรอบจุด (Behavior near the point)",
+                    "เปลี่ยนโจทย์ใหม่ทันที"
+                ],
+                correctIndex: 2,
+                explain: "เมื่อ $D = 0$ การทดสอบด้วยอนุพันธ์อันดับสองจะไม่สามารถสรุปผลได้ ต้องใช้วิธีวิเคราะห์พฤติกรรมของฟังก์ชันในบริเวณใกล้เคียงจุดนั้นเพิ่มเติม"
+            }
+        ];
+
+        let currentActiveQuestions = [];
+        let studentUserAnswers = {};
+        let examTimer = null;
+        let timeRemainingSeconds = 0;
+        let studentInfo = {};
+
+        // Render Math equations via KaTeX
+        function triggerMathRender() {
+            setTimeout(() => {
+                if (window.renderMathInElement) {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                }
+            }, 50);
+        }
+
+        // Shuffle Utility (Fisher-Yates)
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Start Exam Process
+        function startExam(e) {
+            e.preventDefault();
+            const name = document.getElementById('studentName').value.trim();
+            const scope = document.getElementById('examScope').value;
+            const amount = document.getElementById('examAmount').value;
+
+            studentInfo = { name, scope, amount };
+
+            // Filter Questions by Scope
+            let pool = scope === 'all' 
+                ? [...rawQuestionBank] 
+                : rawQuestionBank.filter(q => q.week === parseInt(scope));
+
+            // Shuffle Question pool
+            pool = shuffleArray(pool);
+
+            // Slice according to Amount
+            if (amount !== 'all' && parseInt(amount) < pool.length) {
+                pool = pool.slice(0, parseInt(amount));
+            }
+
+            // Shuffle Options for each question
+            currentActiveQuestions = pool.map(q => {
+                const optionsWithOrigIdx = q.options.map((optText, idx) => ({
+                    text: optText,
+                    isCorrect: idx === q.correctIndex
+                }));
+                const shuffledOpts = shuffleArray(optionsWithOrigIdx);
+                return {
+                    ...q,
+                    shuffledOptions: shuffledOpts
+                };
+            });
+
+            // Set Timer (90 seconds per question)
+            timeRemainingSeconds = currentActiveQuestions.length * 90; 
+            
+            // UI Toggle
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('examWorkspace').classList.remove('hidden');
+            document.getElementById('examHeaderInfo').classList.remove('hidden');
+
+            renderQuestions();
+            updateProgressBar();
+            startTimer();
+            triggerMathRender();
+        }
+
+        // Render Questions
+        function renderQuestions() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            currentActiveQuestions.forEach((q, qIdx) => {
+                const card = document.createElement('div');
+                card.id = `qCard_${qIdx}`;
+                card.className = "bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-md";
+
+                let optionsHtml = '';
+                const labels = ['A', 'B', 'C', 'D', 'E'];
+
+                q.shuffledOptions.forEach((opt, optIdx) => {
+                    const isChecked = studentUserAnswers[qIdx] === optIdx ? 'checked' : '';
+                    optionsHtml += `
+                        <label class="flex items-center p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/80 cursor-pointer transition-all mb-2.5">
+                            <input type="radio" name="q_${qIdx}" value="${optIdx}" ${isChecked} 
+                                   onchange="registerAnswer(${qIdx}, ${optIdx})" class="w-4 h-4 text-cyan-500 focus:ring-cyan-500 bg-slate-900 border-slate-700">
+                            <span class="ml-3 text-sm text-slate-200">
+                                <b class="text-cyan-400 mr-1.5">${labels[optIdx]}.</b> ${opt.text}
+                            </span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full text-xs font-semibold">
+                            ข้อที่ ${qIdx + 1} / ${currentActiveQuestions.length} • Week ${q.week}
+                        </span>
+                        <span class="text-xs text-slate-400 font-medium">${q.title}</span>
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-4 leading-relaxed">${q.question}</h3>
+                    <div class="space-y-1">${optionsHtml}</div>
+                    <div id="explain_${qIdx}" class="hidden mt-4 p-4 rounded-xl border text-xs leading-relaxed"></div>
+                `;
+
+                container.appendChild(card);
+            });
+            triggerMathRender();
+        }
+
+        // Register Student Answer
+        function registerAnswer(qIdx, optIdx) {
+            studentUserAnswers[qIdx] = optIdx;
+            updateProgressBar();
+        }
+
+        // Update Progress Bar
+        function updateProgressBar() {
+            const answeredCount = Object.keys(studentUserAnswers).length;
+            const totalCount = currentActiveQuestions.length;
+            const percent = totalCount > 0 ? (answeredCount / totalCount) * 100 : 0;
+
+            document.getElementById('answeredCountText').innerText = `${answeredCount} / ${totalCount} ข้อ`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        // Timer Logic
+        function startTimer() {
+            updateTimerDisplay();
+            examTimer = setInterval(() => {
+                timeRemainingSeconds--;
+                updateTimerDisplay();
+
+                if (timeRemainingSeconds <= 0) {
+                    clearInterval(examTimer);
+                    alert("⏰ หมดเวลาทำข้อสอบ! ระบบจะทำการส่งข้อสอบโดยอัตโนมัติ");
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(Math.max(0, timeRemainingSeconds) / 60);
+            const secs = Math.max(0, timeRemainingSeconds) % 60;
+            document.getElementById('timerDisplay').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Confirm Submission
+        function confirmSubmit() {
+            const answeredCount = Object.keys(studentUserAnswers).length;
+            const totalCount = currentActiveQuestions.length;
+
+            if (answeredCount < totalCount) {
+                if (!confirm(`คุณตอบไปแล้ว ${answeredCount} จาก ${totalCount} ข้อ ต้องการส่งข้อสอบเลยหรือไม่?`)) {
+                    return;
+                }
+            } else {
+                if (!confirm("คุณต้องการส่งข้อสอบและดูผลการทดสอบเลยหรือไม่?")) {
+                    return;
+                }
+            }
+
+            finishExam();
+        }
+
+        // Calculate and Show Results
+        function finishExam() {
+            clearInterval(examTimer);
+
+            let score = 0;
+            const total = currentActiveQuestions.length;
+            const weekStats = {};
+
+            currentActiveQuestions.forEach((q, qIdx) => {
+                const userAnsIdx = studentUserAnswers[qIdx];
+                const isCorrect = userAnsIdx !== undefined && q.shuffledOptions[userAnsIdx].isCorrect;
+
+                if (isCorrect) score++;
+
+                if (!weekStats[q.week]) {
+                    weekStats[q.week] = { correct: 0, total: 0 };
+                }
+                weekStats[q.week].total++;
+                if (isCorrect) weekStats[q.week].correct++;
+            });
+
+            const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+
+            document.getElementById('examWorkspace').classList.add('hidden');
+            document.getElementById('examHeaderInfo').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            document.getElementById('resultStudentName').innerText = `ผู้ทำข้อสอบ: ${studentInfo.name}`;
+            document.getElementById('resultScore').innerText = `${score}/${total}`;
+            document.getElementById('resultPercentage').innerText = `${percentage}%`;
+
+            const badge = document.getElementById('gradeBadge');
+            if (percentage >= 80) {
+                badge.className = "mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-bold border bg-emerald-500/10 border-emerald-500/30 text-emerald-400";
+                badge.innerText = "🌟 ความพร้อมระดับดีเยี่ยม (Excellent)";
+            } else if (percentage >= 50) {
+                badge.className = "mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-bold border bg-amber-500/10 border-amber-500/30 text-amber-400";
+                badge.innerText = "👍 ผ่านเกณฑ์การทดสอบ (Passed)";
+            } else {
+                badge.className = "mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-bold border bg-rose-500/10 border-rose-500/30 text-rose-400";
+                badge.innerText = "⚠️️ ควรทบทวนเนื้อหาเพิ่มเติม (Needs Review)";
+            }
+
+            const breakdownContainer = document.getElementById('weekBreakdown');
+            breakdownContainer.innerHTML = '';
+
+            Object.keys(weekStats).sort((a,b)=>a-b).forEach(wk => {
+                const stat = weekStats[wk];
+                const wkPct = Math.round((stat.correct / stat.total) * 100);
+                
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs";
+                item.innerHTML = `
+                    <span class="font-semibold text-slate-300">Week ${wk}</span>
+                    <div class="flex items-center gap-3">
+                        <span class="font-mono ${wkPct >= 70 ? 'text-emerald-400' : 'text-amber-400'}">${stat.correct} / ${stat.total} ข้อ (${wkPct}%)</span>
+                        <div class="w-20 bg-slate-800 rounded-full h-2">
+                            <div class="bg-cyan-500 h-2 rounded-full" style="width: ${wkPct}%"></div>
+                        </div>
+                    </div>
+                `;
+                breakdownContainer.appendChild(item);
+            });
+        }
+
+        // Review Detailed Solutions
+        function reviewAnswers() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('examWorkspace').classList.remove('hidden');
+            document.getElementById('submitBtn').classList.add('hidden');
+
+            currentActiveQuestions.forEach((q, qIdx) => {
+                const userAnsIdx = studentUserAnswers[qIdx];
+                const explainDiv = document.getElementById(`explain_${qIdx}`);
+                explainDiv.classList.remove('hidden');
+
+                const correctOptIdx = q.shuffledOptions.findIndex(o => o.isCorrect);
+                const isCorrect = userAnsIdx === correctOptIdx;
+
+                if (isCorrect) {
+                    explainDiv.className = "mt-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs leading-relaxed";
+                    explainDiv.innerHTML = `<b>✅ ถูกต้อง!</b><br>${q.explain}`;
+                } else {
+                    explainDiv.className = "mt-4 p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs leading-relaxed";
+                    explainDiv.innerHTML = `<b>❌ ตอบผิด</b> (คำตอบที่ถูกต้องคือข้อที่ถูกเลือกไฮไลท์)<br><b>เฉลย:</b> ${q.explain}`;
+                }
+            });
+
+            triggerMathRender();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบทดสอบออนไลน์ฟิสิกส์ (บทที่ 7 - 11) - Official Exam Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX CDN for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 shadow-xl sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyan-500/10 border border-cyan-500/30 p-2.5 rounded-xl">
+                    <span class="text-2xl">⚡</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                        Physics Examination System (Ch. 7 - 11)
+                        <span class="bg-cyan-500/20 text-cyan-400 text-xs px-2.5 py-0.5 rounded-full border border-cyan-500/30 font-normal">Official Mode</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">ระบบคลังข้อสอบสุ่มวัดผลฟิสิกส์ บทที่ 7 ถึง 11 (50 ข้อ)</p>
+                </div>
+            </div>
+            
+            <!-- Timer & Info Header -->
+            <div id="examHeaderInfo" class="hidden flex items-center gap-4">
+                <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-xl text-right">
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">เวลาที่เหลือ</div>
+                    <div id="timerDisplay" class="text-lg font-mono font-bold text-amber-400">00:00</div>
+                </div>
+                <button onclick="document.getElementById('formulaModal').classList.remove('hidden')" 
+                        class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 font-medium text-xs py-2.5 px-3.5 rounded-xl transition-all">
+                    📌 คลังสูตรฟิสิกส์
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+
+        <!-- Welcome / Start Exam Card -->
+        <div id="startScreen" class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl max-w-2xl mx-auto my-8">
+            <div class="text-center mb-8">
+                <div class="inline-block p-4 bg-cyan-500/10 rounded-2xl mb-3 border border-cyan-500/20">
+                    <span class="text-4xl">📝</span>
+                </div>
+                <h2 class="text-2xl font-bold text-white">เตรียมความพร้อมทดสอบฟิสิกส์ บทที่ 7 - 11</h2>
+                <p class="text-sm text-slate-400 mt-1">ระบบคลังข้อสอบครอบคลุมสนามแม่เหล็ก, การเหนี่ยวนำ, วงจรไฟฟ้ากระแสสลับ และสารกึ่งตัวนำ</p>
+            </div>
+
+            <form onsubmit="startExam(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">ชื่อ-นามสกุล / รหัสนักศึกษา</label>
+                    <input type="text" id="studentName" required placeholder="กรอกชื่อเพื่อบันทึกผลการสอบ" 
+                           class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">ขอบเขตเนื้อหา</label>
+                        <select id="examScope" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-cyan-300 focus:outline-none focus:border-cyan-500">
+                            <option value="all">ครอบคลุมทั้งหมด (บทที่ 7 - 11)</option>
+                            <option value="7">บทที่ 7: สนามแม่เหล็ก & แรงแม่เหล็ก</option>
+                            <option value="8">บทที่ 8: การเหนี่ยวนำแม่เหล็กไฟฟ้า & หม้อแปลง</option>
+                            <option value="9">บทที่ 9: วงจร RL, LC & สมบัติแม่เหล็กของสาร</option>
+                            <option value="10">บทที่ 10: วงจรไฟฟ้ากระแสสลับ (AC)</option>
+                            <option value="11">บทที่ 11: สารกึ่งตัวนำ, ไดโอด & ลิกจิกดิจิทัล</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">จำนวนข้อสอบ</label>
+                        <select id="examAmount" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-cyan-300 focus:outline-none focus:border-cyan-500">
+                            <option value="all">ข้อสอบทั้งหมดในขอบเขตที่เลือก</option>
+                            <option value="10">สุ่ม 10 ข้อ</option>
+                            <option value="15">สุ่ม 15 ข้อ</option>
+                            <option value="30">สุ่ม 30 ข้อ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-800/50 border border-slate-800 rounded-xl text-xs text-slate-400 space-y-1">
+                    <p class="font-semibold text-slate-300">📌 กติกาการสอบ:</p>
+                    <p>• เมื่อกดเริ่มสอบ ระบบจะเริ่มจับเวลาถอยหลังทันที (90 วินาที/ข้อ)</p>
+                    <p>• ตัวเลือกคำตอบจะถูกสุ่มตำแหน่งเพื่อป้องกันการจำลำดับข้อ</p>
+                    <p>• สามารถส่งข้อสอบก่อนหมดเวลา หรือระบบจะส่งให้อัตโนมัติเมื่อหมดเวลา</p>
+                </div>
+
+                <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.01]">
+                    🚀 เริ่มทำข้อสอบ (Start Exam)
+                </button>
+            </form>
+        </div>
+
+        <!-- Exam Workspace (Hidden initially) -->
+        <div id="examWorkspace" class="hidden">
+            <!-- Progress Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6 shadow-xl flex items-center gap-4">
+                <div class="flex-1">
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="quizStatus" class="text-xs font-semibold text-slate-300">ความคืบหน้า</span>
+                        <span id="answeredCountText" class="text-xs font-mono text-cyan-400">0 / 0 ข้อ</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-2.5">
+                        <div id="progressBar" class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="quizContainer" class="space-y-6"></div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 flex justify-center gap-4">
+                <button id="submitBtn" onclick="confirmSubmit()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-10 rounded-xl shadow-xl transition-all transform hover:scale-105">
+                    ส่งข้อสอบ & สรุปผล
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Analytics Screen (Hidden initially) -->
+        <div id="resultScreen" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
+                <span class="text-5xl mb-2 inline-block">🏆</span>
+                <h2 class="text-2xl font-bold text-white mb-1">ผลการทดสอบฟิสิกส์ส่วนบุคคล</h2>
+                <p id="resultStudentName" class="text-xs text-slate-400 mb-6"></p>
+
+                <!-- Score Circle / Badge -->
+                <div class="inline-flex flex-col items-center justify-center w-36 h-36 rounded-full bg-slate-800 border-4 border-cyan-500/50 my-2">
+                    <span id="resultScore" class="text-3xl font-bold text-cyan-400">0/0</span>
+                    <span id="resultPercentage" class="text-xs text-slate-400 font-mono mt-0.5">0%</span>
+                </div>
+
+                <div id="gradeBadge" class="mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-bold border"></div>
+
+                <!-- Breakdown by Chapter -->
+                <div class="mt-8 text-left bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                    <h4 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                        📊 วิเคราะห์ความพร้อมแยกตามบทเรียน (Chapter Analysis)
+                    </h4>
+                    <div id="weekBreakdown" class="space-y-3"></div>
+                </div>
+
+                <div class="mt-8 flex justify-center gap-4">
+                    <button onclick="reviewAnswers()" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 font-bold py-3 px-6 rounded-xl transition-all text-sm">
+                        🔍 ตรวจดูเฉลยอย่างละเอียด
+                    </button>
+                    <button onclick="location.reload()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all text-sm">
+                        🔄 ทำข้อสอบอีกครั้ง
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Formula Cheat Sheet Modal -->
+    <div id="formulaModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 max-h-[85vh] overflow-y-auto text-sm shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-cyan-400">⚡ คลังสูตรฟิสิกส์สำคัญ (บทที่ 7 - 11)</h3>
+                <button onclick="document.getElementById('formulaModal').classList.add('hidden')" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+            </div>
+            <div class="space-y-4 text-slate-300 text-xs">
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+                    <h4 class="font-bold text-amber-400 mb-2">📌 บทที่ 7: สนามแม่เหล็ก & แรงแม่เหล็ก</h4>
+                    <p>• แรงกระทำต่อประจุ: $F = qvB\sin\theta$</p>
+                    <p>• แรงกระทำต่อลวดตัวนำ: $F = ILB\sin\theta$</p>
+                    <p>• รัศมีวงโคจรประจุ: $R = \frac{mv}{qB}$</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+                    <h4 class="font-bold text-amber-400 mb-2">📌 บทที่ 8: การเหนี่ยวนำแม่เหล็กไฟฟ้า</h4>
+                    <p>• ฟลักซ์แม่เหล็ก: $\Phi_B = BA\cos\theta$</p>
+                    <p>• กฎของฟาราเดย์: $\mathcal{E} = -N \frac{\Delta \Phi_B}{\Delta t}$</p>
+                    <p>• หม้อแปลงไฟฟ้า: $\frac{V_s}{V_p} = \frac{N_s}{N_p} = \frac{I_p}{I_s}$</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+                    <h4 class="font-bold text-amber-400 mb-2">📌 บทที่ 9 & 10: วงจรไฟฟ้ากระแสสลับ (AC)</h4>
+                    <p>• ความต้านทานเชิงซ้อน (Reactance): $X_L = \omega L$, $X_C = \frac{1}{\omega C}$</p>
+                    <p>• ความต้านทานรวม (Impedance): $Z = \sqrt{R^2 + (X_L - X_C)^2}$</p>
+                    <p>• กำลังไฟฟ้าเฉลี่ย: $P_{avg} = I_{rms} V_{rms} \cos\phi$</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Engine -->
+    <script>
+        // Full Physics Question Bank Ch. 7 - 11 (50 Questions Total)
+        const rawQuestionBank = [
+            // ==================== บทที่ 7 ====================
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 1]",
+                question: "อนุภาคประจุไฟฟ้าเคลื่อนที่ตั้งฉากกับสนามแม่เหล็กสม่ำเสมอ จะเกิดการเคลื่อนที่เป็นแนวใด",
+                options: ["เส้นตรง", "วงกลม", "พาราโบลา", "เกลียวสว่ารูปขดลวด"],
+                correctIndex: 1,
+                explain: "เมื่อประจุเคลื่อนที่ตั้งฉากกับสนามแม่เหล็ก แรงแม่เหล็กจะทำหน้าที่เป็นแรงสู่ศูนย์กลาง ทำให้ประจุเคลื่อนที่เป็นวงกลม"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 2]",
+                question: "ขนาดของแรงแม่เหล็กที่กระทำต่อประจุ $q$ ซึ่งเคลื่อนที่ด้วยความเร็ว $v$ ในสนามแม่เหล็ก $B$ คำนวณจากสูตรใด",
+                options: ["$F = qvB$", "$F = qvB\sin\theta$", "$F = \frac{qv}{B}$", "$F = qvB^2$"],
+                correctIndex: 1,
+                explain: "สูตรแรงแม่เหล็กบนประจุคือ $F = qvB\sin\theta$ โดย $\theta$ คือมุมระหว่างความเร็วและสนามแม่เหล็ก"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 3]",
+                question: "ลวดตัวนำยาว $L$ มีกระแสไฟฟ้า $I$ ไหลผ่าน วางตัวตั้งฉากกับสนามแม่เหล็กสม่ำเสมอ $B$ ขนาดของแรงแม่เหล็กคือข้อใด",
+                options: ["$F = ILB$", "$F = \frac{IL}{B}$", "$F = I^2 LB$", "$F = I L B^2$"],
+                correctIndex: 0,
+                explain: "แรงแม่เหล็กบนลวดตัวนำเมื่อตั้งฉากกัน ($\sin 90^\circ = 1$) จะได้ $F = ILB$"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 4]",
+                question: "รัศมีวงโคจร ($R$) ของประจุไฟฟ้าในนามแม่เหล็กสม่ำเสมอแปรผันตามปริมาณใดมากที่สุด",
+                options: ["โมเมนตัมของประจุ ($mv$)", "ประจุไฟฟ้า ($q$)", "สนามแม่เหล็ก ($B$)", "ถูกทุกข้อ"],
+                correctIndex: 3,
+                explain: "จากสมการ $R = \frac{mv}{qB}$ รัศมีขึ้นอยู่กับมวล ความเร็ว ประจุ และสนามแม่เหล็ก"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 5]",
+                question: "อนุภาคเป็นกลางทางไฟฟ้า เมื่อเคลื่อนที่เข้าสู่สนามแม่เหล็กสม่ำเสมอ จะเกิดแรงแม่เหล็กกระทำหรือไม่",
+                options: ["เกิดแรงสูงสุด", "เกิดแรงตามทิศมือขวา", "ไม่เกิดแรงแม่เหล็กเลย", "ขึ้นอยู่กับความเร็ว"],
+                correctIndex: 2,
+                explain: "เนื่องจากประจุ $q = 0$ จาก $F = qvB\sin\theta$ ทำให้ไม่มีแรงแม่เหล็กกระทำ"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 6]",
+                question: "ข้อใดใช้หาทิศของแรงแม่เหล็กที่กระทำต่อประจุบวก",
+                options: ["กฎมือขวา (Right-Hand Rule)", "กฎมือซ้ายของเฟลมมิ่ง", "กฎมือขวาแบบกำมือ", "กฎของฟาราเดย์"],
+                correctIndex: 0,
+                explain: "ทิศของแรงแม่เหล็กบนประจุบวกหาได้จากกฎมือขวา (นิ้วชี้=v, นิ้วกลาง=B, นิ้วหัวแม่มือ=F)"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 7]",
+                question: "สนามแม่เหล็กโลกมีทิศทางพุ่งจากขั้วใดไปขั้วใดในทางภูมิศาสตร์",
+                options: ["ขั้วโลกเหนือ ไป ขั้วโลกใต้", "ขั้วโลกใต้ (ทางแม่เหล็ก) ไป ขั้วโลกเหนือ (ทางแม่เหล็ก)", "จากเส้นศูนย์สูตรขึ้นสู่ขั้วโลก", "พุ่งตรงในแนวดิ่ง"],
+                correctIndex: 1,
+                explain: "ขั้วเหนือแม่เหล็กโลกตั้งอยู่ใกล้ขั้วโลกใต้ทางภูมิศาสตร์ เส้นสนามแม่เหล็กจึงพุ่งออกจากซีกโลกใต้ขึ้นสู่ซีกโลกเหนือ"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 8]",
+                question: "ลวดตัวนำตรงยาวมากมีกระแสไฟฟ้า $I$ สนามแม่เหล็กที่ระยะห่าง $r$ มีค่าแปรผันอย่างไร",
+                options: ["แปรผันตรงกับ $r$", "แปรผกผันกับ $r$", "แปรผกผันกับ $r^2$", "ไม่ขึ้นกับ $r$"],
+                correctIndex: 1,
+                explain: "จากกฎของบีโอ-ซาวาร์ หรือกฎแอมแปร์ $B = \frac{\mu_0 I}{2\pi r}$ ทำให้ $B \propto \frac{1}{r}$"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 9]",
+                question: "โซ레노이드 (Solenoid) ภายในจะมีลักษณะของสนามแม่เหล็กอย่างไร",
+                options: ["เป็นสนามแม่เหล็กสม่ำเสมอ", "มีค่าเป็นศูนย์", "มีทิศวนรอบแกนเป็นวงกลม", "กระจายออกทุกทิศทาง"],
+                correctIndex: 0,
+                explain: "ภายในโซเลโน이드ที่ยาว เส้นแรงแม่เหล็กจะขนานกันและมีความหนาแน่นสม่ำเสมอ ถือเป็นสนามแม่เหล็กสม่ำเสมอ"
+            },
+            {
+                week: 7,
+                title: "บทที่ 7 [ข้อ 10]",
+                question: "หน่วยของสนามแม่เหล็ก ($B$) ในระบบ SI คือข้อใด",
+                options: ["เวเบอร์ (Weber)", "เทสลา (Tesla)", "แอมแปร์ (Ampere)", "โวลต์ (Volt)"],
+                correctIndex: 1,
+                explain: "หน่วยของสนามแม่เหล็กในระบบ SI คือ เทสลา (Tesla, T)"
+            },
+
+            // ==================== บทที่ 8 ====================
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 1]",
+                question: "ฟลักซ์แม่เหล็ก ($\Phi_B$) มีหน่วยเป็นอะไร",
+                options: ["เทสลา (Tesla)", "เวเบอร์ (Weber)", "ฟาราเดย์ (Farad)", "เฮนรี (Henry)"],
+                correctIndex: 1,
+                explain: "หน่วยของฟลักซ์แม่เหล็กคือ เวเบอร์ (Weber, Wb หรือ $\text{T}\cdot\text{m}^2$)"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 2]",
+                question: "กฎการเหนี่ยวนำของฟาราเดย์ระบุว่า แรงเคลื่อนไฟฟ้าเหนี่ยวนำแปรผันตรงกับข้อใด",
+                options: [
+                    "อัตราการเปลี่ยนแปลงฟลักซ์แม่เหล็กเทียบกับเวลา",
+                    "ขนาดของสนามแม่เหล็กเท่านั้น",
+                    "ความต้านทานในขดลวด",
+                    "กระแสไฟฟ้าสูงสุด"
+                ],
+                correctIndex: 0,
+                explain: "กฎของฟาราเดย์: $\mathcal{E} = -N \frac{\Delta \Phi_B}{\Delta t}$ คืออัตราการเปลี่ยนแปลงฟลักซ์แม่เหล็กเทียบกับเวลา"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 3]",
+                question: "เครื่องหมายลบในกฎของเลนซ์ (Lenz's Law) หมายถึงอะไร",
+                options: [
+                    "ทิศทางของกระแสเหนี่ยวนำจะต้านการเปลี่ยนแปลงของฟลักซ์แม่เหล็กที่เป็นต้นเหตุ",
+                    "พลังงานไฟฟ้าลดลง",
+                    "สนามแม่เหล็กมีค่าติดลบ",
+                    "ไม่มีความหมายทางฟิสิกส์"
+                ],
+                correctIndex: 0,
+                explain: "กฎของเลนซ์อธิบายว่ากระแสเหนี่ยวนำจะมีทิศต้านการเปลี่ยนแปลงของฟลักซ์แม่เหล็กเสมอตามหลักอนุรักษ์พลังงาน"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 4]",
+                question: "หม้อแปลงไฟฟ้า (Transformer) ทำงานด้วยหลักการใด",
+                options: ["การเหนี่ยวนำแม่เหล็กไฟฟ้าระหว่างขดลวด", "การคายประจุของตัวเก็บประจุ", "การแปลงกระแสตรงเป็นกระแสสลับโดยตรง", "ความต้านทานเปลี่ยนรูป"],
+                correctIndex: 0,
+                explain: "หม้อแปลงอาศัยหลักการเหนี่ยวนำแม่เหล็กไฟฟ้า (Electromagnetic Induction) จากกระแสสลับในขดลวดปฐมภูมิส่งผ่านแกนเหล็กไปขดลวดทุติยภูมิ"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 5]",
+                question: "หม้อแปลงแปลงขึ้น (Step-up Transformer) จะมีลักษณะของจำนวนรอบอย่างไร",
+                options: ["$N_s > N_p$", "$N_s < N_p$", "$N_s = N_p$", "จำนวนรอบไม่ส่งผล"],
+                correctIndex: 0,
+                explain: "หม้อแปลงแปลงขึ้นเพิ่มแรงดันไฟฟ้า ($V_s > V_p$) ทำให้จำนวนรอบขดลวดทุติยภูมิมากกว่าปฐมภูมิ ($N_s > N_p$)"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 6]",
+                question: "แท่ง1 ตัวนำเคลื่อนที่ตัดผ่านสนามแม่เหล็กสม่ำเสมอ จะเกิดแรงเคลื่อนไฟฟ้าเหนี่ยวนำ ($\mathcal{E}$) คำนวณจากสูตรใด",
+                options: ["$\mathcal{E} = Blv$", "$\mathcal{E} = \frac{Bl}{v}$", "$\mathcal{E} = \frac{v}{Bl}$", "$\mathcal{E} = B^2lv$"],
+                correctIndex: 0,
+                explain: "แรงเคลื่อนไฟฟ้าเหนี่ยวนำบนแท่งตัวนำยาว $L$ เคลื่อนที่ด้วยความเร็ว $v$ ตั้งฉากกับ $B$ คือ $\mathcal{E} = Blv$"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 7]",
+                question: "กระแสไฟฟ้าวน (Eddy Currents) ที่เกิดขึ้นในแกนเหล็กของหม้อแปลง มักจะทำให้เกิดผลเสียในข้อใด",
+                options: ["สูญเสียพลังงานในรูปความร้อน", "เพิ่มแรงดันไฟฟ้าอย่างกะทันหัน", "ลัดวงจรขดลวดปฐมภูมิ", "หยุดการทำงานของหม้อแปลง"],
+                correctIndex: 0,
+                explain: "Eddy Currents ทำให้เกิดความร้อนสูญเสียในแกนเหล็ก จึงต้องแก้ด้วยการใช้แผ่นเหล็กบางเคลือบฉนวนอัดซ้อนกัน"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 8]",
+                question: "เหนี่ยวนำแม่เหล็กไฟฟ้าเชิงมุม ของเครื่องกำเนิดไฟฟ้ากระแสสลับ (AC Generator) จะแปรผันตามฟังก์ชันใด",
+                options: ["ไซน์ ($\sin \omega t$)", "โคไซน์ ($\cos \omega t$)", "เอกซ์โพเนนเชียล ($e^t$)", "เส้นตรง"],
+                correctIndex: 0,
+                explain: "แรงเคลื่อนไฟฟ้าใน Generator เกิดจาก $\mathcal{E} = N B A \omega \sin(\omega_t)$ ซึ่งแปรผันตามรูปคลื่นไซน์"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 9]",
+                question: "หม้อแปลงอุดมคติ (Ideal Transformer) มีกำลังไฟฟ้าเข้า ($P_p$) และกำลังไฟฟ้าออก ($P_s$) เป็นอย่างไร",
+                options: ["$P_p = P_s$", "$P_p > P_s$", "$P_p < P_s$", "ไม่เกี่ยวข้องกัน"],
+                correctIndex: 0,
+                explain: "หม้อแปลงอุดมคติไม่มีการสูญเสียพลังงาน กำลังไฟฟ้าขาเข้าจึงเท่ากับกำลังไฟฟ้าขาออก ($V_p I_p = V_s I_s$)"
+            },
+            {
+                week: 8,
+                title: "บทที่ 8 [ข้อ 10]",
+                question: "หน่วยของความเหนี่ยวนำ (Inductance, $L$) คือข้อใด",
+                options: ["เฮนรี (Henry)", "ฟารัด (Farad)", "โอห์ม (Ohm)", "คูลอมบ์ (Coulomb)"],
+                correctIndex: 0,
+                explain: "หน่วยของความเหนี่ยวนำตัวเองและความเหนี่ยวนำร่วมคือ เฮนรี (Henry, H)"
+            },
+
+            // ==================== บทที่ 9 ====================
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 1]",
+                question: "ในวงจร RL อนุกรม เมื่อสับสวิตช์ให้กระแสไหล กระแสไฟฟ้าในวงจรจะมีลักษณะการเปลี่ยนแปลงอย่างไรตามเวลา",
+                options: ["เพิ่มขึ้นแบบเอ็กซ์โพเนนเชียลเข้าสู่ค่าคงที่", "คงที่ทันทีตั้งแต่เริ่มต้น", "ลดลงเป็นศูนย์ทันที", "เพิ่มขึ้นแบบเส้นตรงไม่มีที่สิ้นสุด"],
+                correctIndex: 0,
+                explain: "วงจร RL มีตัวเหนี่ยวนำต้านการเปลี่ยนแปลงกระแส ทำให้กระแสค่อยๆ เพิ่มขึ้นตามเวลาแบบเอ็กซ์โพเนนเชียล ($I = \frac{V}{R}(1 - e^{-t/\tau})$)"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 2]",
+                question: "ค่าคงตัวเวลา (Time Constant, $\tau$) ของวงจร RL คำนวณจากสูตรใด",
+                options: ["$\tau = \frac{L}{R}$", "$\tau = RC$", "$\tau = LR$", "$\tau = \frac{R}{L}$"],
+                correctIndex: 0,
+                explain: "ค่าคงตัวเวลาของวงจร RL คือ $\tau = \frac{L}{R}$ ส่วนวงจร RC คือ $\tau = RC$"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 3]",
+                question: "พลังงานสะสมในตัวเหนี่ยวนำ ($L$) เมื่อมีกระแสไฟฟ้า $I$ ไหลผ่าน หาได้จากสูตรใด",
+                options: ["$U = \frac{1}{2} L I^2$", "$U = LI$", "$U = \frac{1}{2} C V^2$", "$U = I^2 R$"],
+                correctIndex: 0,
+                explain: "พลังงานที่สะสมในสนามแม่เหล็กของตัวเหนี่ยวนำคือ $U = \frac{1}{2} L I^2$"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 4]",
+                question: "วงจร LC อุดมคติ จะเกิดการกวัดแกว่ง (Oscillation) ของพลังงานระหว่างที่ใด",
+                options: ["สนามไฟฟ้าในตัวเก็บประจุ และสนามแม่เหล็กในตัวเหนี่ยวนำ", "ความต้านทานและแบตเตอรี่", "ความร้อนและแสง", "กระแสตรงและกระแสสลับ"],
+                correctIndex: 0,
+                explain: "วงจร LC ถ่ายเทพลังงานกลับไปมาระหว่างประจุไฟฟ้าในสนามไฟฟ้าของ C และกระแสไฟฟ้าในสนามแม่เหล็กของ L"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 5]",
+                question: "ความถี่เรโซแนนซ์เชิงมุม ($\omega_0$) ของวงจร LC คำนวณจากสูตรใด",
+                options: ["$\omega_0 = \frac{1}{\sqrt{LC}}$", "$\omega_0 = \sqrt{LC}$", "$\omega_0 = \frac{L}{C}$", "$\omega_0 = 2\pi LC$"],
+                correctIndex: 0,
+                explain: "ความถี่เรโซแนนซ์ของวงจร LC เกิดขึ้นเมื่อ $X_L = X_C \implies \omega L = \frac{1}{\omega C} \implies \omega_0 = \frac{1}{\sqrt{LC}}$"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 6]",
+                question: "สารแม่เหล็กประเภทไดอะแมกเนติก (Diamagnetic) มีสมบัติสนามแม่เหล็กอย่างไร",
+                options: ["ถูกผลักเล็กน้อยจากสนามแม่เหล็กภายนอก", "ถูกดูดเข้าหาสนามแม่เหล็กอย่างแรง", "ถูกดูดเข้าหาสนามแม่เหล็กเล็กน้อย", "ไม่มีปฏิกิริยาใดๆ เลย"],
+                correctIndex: 0,
+                explain: "สารไดอะแมกเนติกมีความสามารถในการรับ magnetic susceptibility เป็นลบเล็กน้อย ทำให้ถูกผลักออกจากบริเวณสนามแม่เหล็กเข้มข้น"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 7]",
+                question: "สารพาราแมกเนติก (Paramagnetic) มีลักษณะการตอบสนองต่อสนามแม่เหล็กอย่างไร",
+                options: ["ถูกดูดเข้าหาสนามแม่เหล็กภายนอกเล็กน้อย", "ถูกผลักออกจากสนามแม่เหล็ก", "แสดงความเป็นแม่เหล็กถาวรแม้ไม่มีสนามภายนอก", "ไม่มีผลกระทบ"],
+                correctIndex: 0,
+                explain: "สารพาราแมกเนติกถูกดูดเข้าหาสนามแม่เหล็กเล็กน้อยเนื่องจากมีโมเมนต์แม่เหล็กสอดคล้องกับสนามภายนอก"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 8]",
+                question: "สารเฟอร์โรแมกเนติก (Ferromagnetic) มีสมบัติเด่นคือข้อใด",
+                options: ["ถูกดูดเข้าหาสนามแม่เหล็กอย่างแรงและรักษาความเป็นแม่เหล็กไว้ได้", "นำไฟฟ้าได้ดีเยี่ยม", "ไม่มีความต้านทานภายใน", "เป็นฉนวนไฟฟ้าที่ดีเยี่ยม"],
+                correctIndex: 0,
+                explain: "สารเฟอร์โรแมกเนติก (เช่น เหล็ก นิกเกิล โคบอลต์) มีโดเมนแม่เหล็กจัดเรียงตัวง่ายและดึงดูดอย่างแรง กลายเป็นแม่เหล็กถาวรได้"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 9]",
+                question: "อุณหภูมิคูรี (Curie Temperature) คืออุณหภูมิที่สารประเภทใดเปลี่ยนสภาพไปเป็นพาราแมกเนติก",
+                options: ["เฟอร์โรแมกเนติก", "ไดอะแมกเนติก", "ตัวนำยิ่งยวด", "สารกึ่งตัวนำ"],
+                correctIndex: 0,
+                explain: "เมื่อสารเฟอร์โรแมกเนติกถูกเผาจนถึงอุณหภูมิคูรี ความร้อนจะทำลายความเป็นโดเมนแม่เหล็กถาวรและเปลี่ยนเป็นพาราแมกเนติก"
+            },
+            {
+                week: 9,
+                title: "บทที่ 9 [ข้อ 10]",
+                question: "ในวงจร RL อนุกรม ค่าแรงดันไฟฟ้าตกคร่อมตัวเหนี่ยวนำ ($V_L$) จะมีเฟสอย่างไรเทียบกับกระแสไฟฟ้าในวงจร",
+                options: ["นำหน้ากระแสอยู่ $90^\circ$ ($\frac{\pi}{2}$)", "ตามหลังกระแสอยู่ $90^\circ$", "มีเฟสตรงกัน ($0^\circ$)", "ตรงข้ามเฟสกันพอดี ($180^\circ$)"],
+                correctIndex: 0,
+                explain: "ในตัวเหนี่ยวนำ แรงดันไฟฟ้าจะนำหน้ากระแสไฟฟ้าอยู่ $90^\circ$"
+            },
+
+            // ==================== บทที่ 10 ====================
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 1]",
+                question: "ความต้านทานเชิงซ้อนเหนี่ยวนำ (Inductive Reactance, $X_L$) คำนวณจากสูตรใด",
+                options: ["$X_L = \omega L = 2\pi f L$", "$X_L = \frac{1}{\omega L}$", "$X_L = \omega C$", "$X_L = \frac{R}{\omega}$"],
+                correctIndex: 0,
+                explain: "ความต้านทานเชิงซ้อนของตัวเหนี่ยวนำคือ $X_L = \omega L = 2\pi f L$"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 2]",
+                question: "ความต้านทานเชิงซ้อนคาปาซิทีฟ (Capacitive Reactance, $X_C$) มีค่าแปรผันอย่างไรกับความถี่ไฟฟ้าสลับ ($f$)",
+                options: ["แปรผกผันกับความถี่ ($X_C \propto \frac{1}{f}$)", "แปรผันตรงกับความถี่", "ไม่ขึ้นกับความถี่", "แปรผันตามกำลังสองของความถี่"],
+                correctIndex: 0,
+                explain: "จาก $X_C = \frac{1}{2\pi f C}$ จะเห็นว่า $X_C$ แปรผกผันกับความถี่ $f$"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 3]",
+                question: "อิมพีแดนซ์รวม ($Z$) ของวงจร RLC อนุกรม คำนวณจากสูตรใด",
+                options: ["$Z = \sqrt{R^2 + (X_L - X_C)^2}$", "$Z = R + X_L + X_C$", "$Z = \sqrt{R^2 + X_L^2 + X_C^2}$", "$Z = R - (X_L + X_C)$"],
+                correctIndex: 0,
+                explain: "อิมพีแดนซ์รวมในวงจร RLC อนุกรมหาได้จากผลรวมเวกเตอร์ของความต้านทาน $R$ และรีแอกตนนส์หักล้างกัน $Z = \sqrt{R^2 + (X_L - X_C)^2}$"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 4]",
+                question: "ค่ารากที่สองของกำลังสองเฉลี่ย (RMS Value) ของแรงดันไฟฟ้ากระแสสลับ คำนวณจากค่าสูงสุด ($V_0$) อย่างไร",
+                options: ["$V_{rms} = \frac{V_0}{\sqrt{2}}$", "$V_{rms} = V_0 \sqrt{2}$", "$V_{rms} = \frac{V_0}{2}$", "$V_{rms} = V_0$"],
+                correctIndex: 0,
+                explain: "ค่า RMS ของแรงดันหรือกระแสไฟฟ้าสลับคือ $V_{rms} = \frac{V_0}{\sqrt{2}} \approx 0.707 V_0$"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 5]",
+                question: "สภาวะเรโซแนนซ์ (Resonance) ในวงจร RLC อนุกรม จะเกิดขึ้นเมื่อใด",
+                options: ["$X_L = X_C$", "$R = 0$", "$X_L > X_C$", "$Z$ มีค่าสูงสุด"],
+                correctIndex: 0,
+                explain: "เรโซแนนซ์เกิดขึ้นเมื่อรีแอกตンスหักล้างกันหมดพอดี คือ $X_L = X_C$ ทําให้อิมพีแดนซ์ $Z = R$ ต่ำสุดและกระแสสูงสุด"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 6]",
+                question: "กำลังไฟฟ้าเฉลี่ย ($P_{avg}$) ในวงจรไฟฟ้ากระแสสลับคำนวณจากสูตรใด",
+                options: ["$P_{avg} = I_{rms} V_{rms} \cos\phi$", "$P_{avg} = I_{rms} V_{rms}$", "$P_{avg} = I_{rms}^2 Z$", "$P_{avg} = \frac{V_{rms}^2}{R}$"],
+                correctIndex: 0,
+                explain: "กำลังไฟฟ้าเฉลี่ยคำนวณจาก $P_{avg} = I_{rms} V_{rms} \cos\phi$ โดย $\cos\phi$ คือตัวประกอบกำลัง (Power Factor)"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 7]",
+                question: "ในวงจรตัวเก็บประจุ (Pure Capacitor) ต่อกับแหล่งจ่าย AC เฟสของกระแสไฟฟ้าจะเป็นอย่างไรกับแรงดันไฟฟ้า",
+                options: ["กระแสไฟฟ้านำหน้าแรงดันอยู่ $90^\circ$", "แรงดันนำหน้ากระแสอยู่ $90^\circ$", "เฟสตรงกัน", "ตามหลังกัน $180^\circ$"],
+                correctIndex: 0,
+                explain: "ในตัวเก็บประจุ กระแสไฟฟ้าจะนำหน้าแรงดันไฟฟ้าอยู่ $90^\circ$ (จำง่ายๆ ICE: I นำหน้า E ใน C)"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 8]",
+                question: "ตัวประกอบกำลัง (Power Factor, $\cos\phi$) ในวงจรไฟฟ้ากระแสสลับ มีค่าสูงสุดเท่ากับเท่าใด",
+                options: ["1", "0", "$\sqrt{2}$", "อนันต์"],
+                correctIndex: 0,
+                explain: "ค่าตัวประกอบกำลัง $\cos\phi = \frac{R}{Z}$ มีค่าอยู่ระหว่าง 0 ถึง 1 โดยมีค่าสูงสุดเป็น 1 เมื่อวงจรเป็นความต้านทานบริสุทธิ์"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 9]",
+                question: "หม้อแปลงไฟฟ้าสามารถทำงานกับกระแสไฟฟ้าประเภทใด",
+                options: ["กระแสสลับ (AC) เท่านั้น", "กระแสตรง (DC) เท่านั้น", "ทั้ง AC และ DC ได้ดีเท่ากัน", "กระแสพัลส์ตรง"],
+                correctIndex: 0,
+                explain: "หม้อแปลงต้องอาศัยการเปลี่ยนแปลงฟลักซ์แม่เหล็กซึ่งเกิดจากกระแสสลับ (AC) เท่านั้น หากใช้ DC ฟลักซ์จะไม่เปลี่ยนและขดลวดจะไหม้"
+            },
+            {
+                week: 10,
+                title: "บทที่ 10 [ข้อ 10]",
+                question: "บ้านเรือนทั่วไปในประเทศไทยใช้ไฟฟ้ากระแสสลับที่มีค่าแรงดัน RMS และความถี่มาตรฐานเท่าใด",
+                options: ["220 โวลต์, 50 เฮิรตซ์", "110 โวลต์, 60 เฮิรตซ์", "220 โวลต์, 60 เฮิรตซ์", "380 โวลต์, 50 เฮิรตซ์"],
+                correctIndex: 0,
+                explain: "มาตรฐานไฟฟ้าประเทศไทยคือ แรงดัน 220 โวลต์ RMS และความถี่ 50 เฮิรตซ์"
+            },
+
+            // ==================== บทที่ 11 ====================
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 1]",
+                question: "สารกึ่งตัวนำชนิด n (n-type semiconductor) เกิดจากการโดปสารบริสุทธิ์ (เช่น ซิลิคอน) ด้วยสารเจือปนกลุ่มใด",
+                options: ["ธาตุหมู่ 5 (เช่น ฟอสฟอรัส, Arsenic)", "ธาตุหมู่ 3 (เช่น โบรอน, Indium)", "ธาตุหมู่ 1 (เช่น โซเดียม)", "ธาตุหมู่ 7 (เช่น คลอรีน)"],
+                correctIndex: 0,
+                explain: "การโดปด้วยธาตุหมู่ 5 จะให้อิเล็กตรอนอิสระเกินมา ทำให้เกิดพาหะนำไฟฟ้าส่วนใหญ่เป็นอิเล็กตรอน (Negative-type)"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 2]",
+                question: "สารกึ่งตัวนำชนิด p (p-type semiconductor) มีพาหะนำกระแสไฟฟ้าหลัก (Majority carriers) คืออะไร",
+                options: ["โฮล (Holes)", "อิเล็กตรอนอิสระ (Electrons)", "ไอออนบวก", "โปรตอน"],
+                correctIndex: 0,
+                explain: "สารชนิด p เกิดจากการโดปด้วยธาตุหมู่ 3 ทำให้เกิดที่ว่างของอิเล็กตรอนเรียกว่า 'โฮล (Holes)' ทำหน้าที่เป็นพาหะนำไฟฟ้าหลัก"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 3]",
+                question: "รอยต่อ p-n (p-n junction) เมื่อต่อแบบไบอัสตรง (Forward Bias) จะมีลักษณะการทำงานอย่างไร",
+                options: ["กระแสไฟฟ้าไหลผ่านได้สะดวก ความกว้างชั้น depletion ลดลง", "กระแสไฟฟ้าไม่สามารถไหลผ่านได้", "ความต้านทานสูงมาก", "เกิดสนามแม่เหล็กไฟฟ้า"],
+                correctIndex: 0,
+                explain: "การไบอัสตรง (ขั้วบวกต่อ p, ขั้วลบต่อ n) จะผลักดันให้พาหะข้ามรอยต่อได้ง่าย กระแสไหลสะดวก ชั้น deplete แคบลง"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 4]",
+                question: "ไดโอด (Diode) มีสมบัติสำคัญในวงจรไฟฟ้าคือข้อใด",
+                options: ["ยอมให้กระแสไฟฟ้าไหลผ่านได้ทิศทางเดียว", "แปลงกระแสสลับให้เป็นกระแสสลับความถี่สูง", "เพิ่มขนาดแรงดันไฟฟ้าขึ้น 2 เท่า", "เก็บประจุไฟฟ้าสำรอง"],
+                correctIndex: 0,
+                explain: "ไดโอดทำหน้าที่เสมือนวาล์วทางเดียว ยอมให้กระแสไหลผ่านเฉพาะทิศทางจากขาแอโนดไปแคโทด"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 5]",
+                question: "วงจรเรียงกระแสแบบคลื่นครึ่งเดียว (Half-wave rectifier) ใช้ไดโอดจำนวนกี่ตัวเป็นอย่างน้อย",
+                options: ["1 ตัว", "2 ตัว", "4 ตัว", "3 ตัว"],
+                correctIndex: 0,
+                explain: "วงจรเรียงกระแสแบบคลื่นครึ่งเดียวใช้ไดโอดเพียง 1 ตัวในการตัดซีกคลื่นลบออก"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 6]",
+                question: "เกตตรรกะพื้นฐาน (Logic Gates) ในระบบดิจิทัลประกอบด้วยเกตหลักอะไรบ้าง",
+                options: ["AND, OR, NOT", "NAND, NOR, XOR", "FLIP-FLOP, COUNTER", "AMPLIFIER, OSCILLATOR"],
+                correctIndex: 0,
+                explain: "เกตตรรกะพื้นฐานที่สุดในระบบดิจิทัลคือ AND, OR และ NOT Gate"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 7]",
+                question: "ผลลัพธ์ของ AND Gate จะเป็นจริง (Logic 1) ก็ต่อเมื่อเงื่อนไขใดเป็นจริง",
+                options: ["อินพุตทุกตัวต้องเป็นจริง (1) ทั้งหมด", "มีอินพุตตัวใดตัวหนึ่งเป็นจริง", "อินพุตทุกตัวต้องเป็นเท็จ (0)", "อินพุตสลับค่ากัน"],
+                correctIndex: 0,
+                explain: "AND Gate ทำงานเสมือนการคูณทางตรรกะ ผลลัพธ์จะออก 1 เมื่ออินพุตทุกตัวเป็น 1 พร้อมกันเท่านั้น"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 8]",
+                question: "เกตตรรกะใดที่ทำหน้าที่กลับสถานะสัญญาณ (Inverter) จาก 0 เป็น 1 และจาก 1 เป็น 0",
+                options: ["NOT Gate", "AND Gate", "OR Gate", "XOR Gate"],
+                correctIndex: 0,
+                explain: "NOT Gate หรือ Inverter ทำหน้าที่กลับสถานะลอจิก (Complement)"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 9]",
+                question: "ทรานซิสเตอร์ (Transistor) ชนิด BJT ประกอบด้วยขั้วต่อหลัก 3 ขั้ว ได้แก่ข้อใด",
+                options: ["Emitter, Base, Collector", "Anode, Cathode, Gate", "Source, Drain, Gate", "Positive, Negative, Neutral"],
+                correctIndex: 0,
+                explain: "Bipolar Junction Transistor (BJT) มีขั้วหลัก 3 ขั้วคือ Emitter (E), Base (B) และ Collector (C)"
+            },
+            {
+                week: 11,
+                title: "บทที่ 11 [ข้อ 10]",
+                question: "LED (Light Emitting Diode) เปล่งแสงออกมาได้จากกระบวนการใดเมื่อต่อไบอัสตรง",
+                options: ["การคายพลังงานเมื่ออิเล็กตรอนรวมตัวกับโฮล", "การเผาไส้หลอดความร้อนสูง", "การคายประจุสนามแม่เหล็ก", "การชนกันของอากาศภายในหลอด"],
+                correctIndex: 0,
+                explain: "LED ทำงานโดยการที่อิเล็กตรอนตกลงมารวมกับโฮลที่รอยต่อ p-n ปลดปล่อยพลังงานออกมาในรูปของโฟตอนแสง"
+            }
+        ];
+
+        let currentQuizList = [];
+        let userAnswers = {};
+        let examTimer = null;
+        let timeLeft = 0;
+
+        function startExam(event) {
+            event.preventDefault();
+            const name = document.getElementById('studentName').value.trim();
+            const scope = document.getElementById('examScope').value;
+            const amount = document.getElementById('examAmount').value;
+
+            if (!name) return alert('กรุณากรอกชื่อ-รหัสนักศึกษาก่อนเริ่มสอบ');
+
+            // Filter questions based on scope
+            let filtered = rawQuestionBank;
+            if (scope !== 'all') {
+                const weekNum = parseInt(scope);
+                filtered = rawQuestionBank.filter(q => q.week === weekNum);
+            }
+
+            // Shuffle filtered questions
+            let shuffled = [...filtered].sort(() => Math.random() - 0.5);
+
+            // Limit amount
+            if (amount !== 'all') {
+                const limit = parseInt(amount);
+                shuffled = shuffled.slice(0, limit);
+            }
+
+            if (shuffled.length === 0) {
+                return alert('ไม่พบข้อสอบในขอบเขตที่เลือก กรุณาเลือกใหม่');
+            }
+
+            currentQuizList = shuffled;
+            userAnswers = {};
+
+            // Setup timer (90 seconds per question)
+            timeLeft = currentQuizList.length * 90;
+
+            // Switch screens
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('examWorkspace').classList.remove('hidden');
+            document.getElementById('examHeaderInfo').classList.remove('hidden');
+
+            renderQuestions();
+            startTimer();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            currentQuizList.forEach((q, idx) => {
+                // Shuffle options for each question to prevent pattern memorization
+                let optionsWithOriginalIdx = q.options.map((opt, oIdx) => ({ opt, oIdx }));
+                optionsWithOriginalIdx.sort(() => Math.random() - 0.5);
+
+                let optionsHtml = '';
+                optionsWithOriginalIdx.forEach((item) => {
+                    optionsHtml += `
+                        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 hover:border-cyan-500/50 hover:bg-slate-800 cursor-pointer transition-all">
+                            <input type="radio" name="question_${idx}" value="${item.oIdx}" onchange="recordAnswer(${idx}, ${item.oIdx})" class="mt-0.5 text-cyan-500 focus:ring-cyan-500 bg-slate-900 border-slate-700">
+                            <span class="text-xs text-slate-200">${item.opt}</span>
+                        </label>
+                    `;
+                });
+
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs px-3 py-1 rounded-full font-semibold">${q.title} (บทที่ ${q.week})</span>
+                        <span class="text-xs text-slate-400 font-mono">ข้อที่ ${idx + 1} จาก ${currentQuizList.length}</span>
+                    </div>
+                    <h3 class="text-sm md:text-base font-semibold text-white mb-4 leading-relaxed">${q.question}</h3>
+                    <div class="space-y-2.5">${optionsHtml}</div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Render Math equations using KaTeX
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+
+            updateProgress();
+        }
+
+        function recordAnswer(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const total = currentQuizList.length;
+            const percent = (answeredCount / total) * 100;
+
+            document.getElementById('answeredCountText').innerText = `${answeredCount} / ${total} ข้อ`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        function startTimer() {
+            const display = document.getElementById('timerDisplay');
+            examTimer = setInterval(() => {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                display.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(examTimer);
+                    alert('หมดเวลาการทดสอบ ระบบจะทำการส่งข้อสอบอัตโนมัติ');
+                    submitExam();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function confirmSubmit() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const total = currentQuizList.length;
+            if (answeredCount < total) {
+                if (!confirm(`คุณยังทำข้อสอบไม่ครบ (${answeredCount}/${total} ข้อ) ต้องการส่งข้อสอบเลยหรือไม่?`)) {
+                    return;
+                }
+            } else {
+                if (!confirm('คุณต้องการส่งข้อสอบและตรวจผลคะแนนใช่หรือไม่?')) {
+                    return;
+                }
+            }
+            submitExam();
+        }
+
+        function submitExam() {
+            clearInterval(examTimer);
+            document.getElementById('examWorkspace').classList.add('hidden');
+            document.getElementById('examHeaderInfo').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            const name = document.getElementById('studentName').value;
+            document.getElementById('resultStudentName').innerText = `ผู้สอบ: ${name}`;
+
+            let score = 0;
+            let weekStats = {};
+
+            currentQuizList.forEach((q, idx) => {
+                if (!weekStats[q.week]) {
+                    weekStats[q.week] = { total: 0, correct: 0 };
+                }
+                weekStats[q.week].total++;
+
+                if (userAnswers[idx] !== undefined && parseInt(userAnswers[idx]) === q.correctIndex) {
+                    score++;
+                    weekStats[q.week].correct++;
+                }
+            });
+
+            const total = currentQuizList.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('resultScore').innerText = `${score} / ${total}`;
+            document.getElementById('resultPercentage').innerText = `${percentage}%`;
+
+            // Grade Badge & Theme
+            let grade = '';
+            let badgeClass = '';
+            if (percentage >= 80) {
+                grade = '🌟 ดีเยี่ยม (Grade 4.0 / A)';
+                badgeClass = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+            } else if (percentage >= 65) {
+                grade = '👍 ดีมาก (Grade 3.0 - 3.5)';
+                badgeClass = 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30';
+            } else if (percentage >= 50) {
+                grade = '💡 ผ่านเกณฑ์ (Grade 2.0 - 2.5)';
+                badgeClass = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+            } else {
+                grade = '⚠️ ควรทบทวนบทเรียนเพิ่มเติม';
+                badgeClass = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+            }
+
+            const badgeEl = document.getElementById('gradeBadge');
+            badgeEl.className = `mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-bold border ${badgeClass}`;
+            badgeEl.innerText = grade;
+
+            // Breakdown HTML
+            const breakdownContainer = document.getElementById('weekBreakdown');
+            breakdownContainer.innerHTML = '';
+
+            Object.keys(weekStats).sort().forEach(w => {
+                let stat = weekStats[w];
+                let p = Math.round((stat.correct / stat.total) * 100);
+                breakdownContainer.innerHTML = `
+                    <div class="flex justify-between items-center text-xs border-b border-slate-900 pb-2">
+                        <span class="text-slate-300 font-medium">บทที่ ${w}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-slate-400">${stat.correct} / ${stat.total} ข้อ (${p}%)</span>
+                            <div class="w-24 bg-slate-900 rounded-full h-2">
+                                <div class="bg-cyan-500 h-2 rounded-full" style="width: ${p}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                ` + breakdownContainer.innerHTML;
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function reviewAnswers() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('examWorkspace').classList.remove('hidden');
+
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            currentQuizList.forEach((q, idx) => {
+                const userChoice = userAnswers[idx];
+                const isCorrect = userChoice !== undefined && parseInt(userChoice) === q.correctIndex;
+
+                let optionsHtml = '';
+                q.options.forEach((opt, oIdx) => {
+                    let style = 'bg-slate-800/60 border-slate-700/60 text-slate-300';
+                    let marker = '';
+
+                    if (oIdx === q.correctIndex) {
+                        style = 'bg-emerald-950/50 border-emerald-500/50 text-emerald-200 font-semibold';
+                        marker = ' ✅ (คำตอบที่ถูกต้อง)';
+                    } else if (oIdx === parseInt(userChoice)) {
+                        style = 'bg-rose-950/50 border-rose-500/50 text-rose-200';
+                        marker = ' ❌ (ที่คุณเลือก)';
+                    }
+
+                    optionsHtml += `
+                        <div class="p-3.5 rounded-xl border ${style} text-xs">
+                            ${opt} ${marker}
+                        </div>
+                    `;
+                });
+
+                const card = document.createElement('div');
+                card.className = `bg-slate-900 border rounded-3xl p-6 shadow-xl ${isCorrect ? 'border-emerald-500/30' : 'border-rose-500/30'}`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xs px-3 py-1 rounded-full font-semibold ${isCorrect ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'}">
+                            ${isCorrect ? 'ตอบถูก 🎉' : 'ตอบผิด ❌'} — บทที่ ${q.week}
+                        </span>
+                        <span class="text-xs text-slate-400 font-mono">ข้อที่ ${idx + 1}</span>
+                    </div>
+                    <h3 class="text-sm md:text-base font-semibold text-white mb-4 leading-relaxed">${q.question}</h3>
+                    <div class="space-y-2.5 mb-4">${optionsHtml}</div>
+                    <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-xs text-slate-300">
+                        <p class="font-bold text-cyan-400 mb-1">💡 คำอธิบายหลักการ:</p>
+                        <p class="leading-relaxed">${q.explain}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
